@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1350" viewBox="0 0 2400 1350" role="img" aria-labelledby="slide-title slide-desc">
+  <title id="slide-title">研究现状：两阶段结构不等于联合全局最优</title>
+  <desc id="slide-desc">代表性文献的决策层级与最优性保证对比。独立核验依据：Sarikaya and Ercetin 的作者全文 III-A、III-B 及附录；BARA 的 IJCAI 2023 正文第 4、5.2、6 节；MultiBOS-AFL 的 arXiv 2311.12548v1 全文 III、IV、V 节；EURO-AFL 的 IEEE IJCNN 2024 官方摘要，未取得全文。BARA 实际先搜索参与人数，再通过既有逆向拍卖确定相应轮预算，图中以预算与人数联动表示，不将其描述为任意动态联合序列的最优证明。MultiBOS-AFL 的 session 包含多个通信轮；EURO-AFL 的摘要指多次训练 session，不能将其等同通信轮。两层策略、搜索收敛与完整联合全局最优不是同一结论。本图不断言整个领域不存在最优方法。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#4874CB"/></marker>
+    <symbol id="server" viewBox="0 0 64 64">
+      <rect x="7" y="6" width="50" height="21" rx="5" fill="#17345C"/>
+      <rect x="7" y="33" width="50" height="21" rx="5" fill="#17345C"/>
+      <circle cx="17" cy="16" r="3" fill="#30C0B4"/><circle cx="17" cy="43" r="3" fill="#30C0B4"/>
+      <path d="M29 16H47M29 43H47M32 54V61M20 61H44" fill="none" stroke="#4874CB" stroke-width="3"/>
+    </symbol>
+    <symbol id="coins" viewBox="0 0 64 64">
+      <ellipse cx="29" cy="47" rx="22" ry="9" fill="#EE822F"/>
+      <path d="M7 34V46C7 57 51 57 51 46V34" fill="#EE822F" stroke="#17345C" stroke-width="2"/>
+      <ellipse cx="29" cy="34" rx="22" ry="9" fill="#FFFFFF" stroke="#EE822F" stroke-width="4"/>
+      <circle cx="39" cy="21" r="16" fill="#EE822F" stroke="#FFFFFF" stroke-width="3"/>
+      <path d="M39 11V31M33 15H42C49 15 49 21 39 21C29 21 29 27 45 27" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+    </symbol>
+    <symbol id="client" viewBox="0 0 64 64">
+      <rect x="8" y="8" width="48" height="34" rx="5" fill="#FFFFFF" stroke="#4874CB" stroke-width="3"/>
+      <circle cx="32" cy="21" r="6" fill="#30C0B4"/>
+      <path d="M21 35C21 25 43 25 43 35" fill="#30C0B4"/>
+      <path d="M32 42V53M19 53H45" fill="none" stroke="#17345C" stroke-width="3"/>
+    </symbol>
+    <symbol id="network" viewBox="0 0 64 64">
+      <path d="M10 16L32 10L54 23M10 16L32 32L54 23M10 48L32 10M10 16L32 54M10 48L32 32L54 44M10 48L32 54L54 44M32 10L54 44M32 54L54 23" fill="none" stroke="#4874CB" stroke-width="2"/>
+      <g fill="#30C0B4" stroke="#FFFFFF" stroke-width="2"><circle cx="10" cy="16" r="6"/><circle cx="10" cy="48" r="6"/><circle cx="32" cy="10" r="6"/><circle cx="32" cy="32" r="6"/><circle cx="32" cy="54" r="6"/><circle cx="54" cy="23" r="6"/><circle cx="54" cy="44" r="6"/></g>
+    </symbol>
+  </defs>
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" fill="#17345C">
+    <rect width="2400" height="1350" fill="#FFFFFF"/>
+    <rect x="80" y="75" width="12" height="112" rx="6" fill="#4874CB"/>
+    <text x="118" y="127" font-size="52" font-weight="700" data-max-width="2180">研究现状：两阶段结构不等于联合全局最优</text>
+    <text x="118" y="184" font-size="32" data-max-width="2180">从单轮资源激励，到跨时间预算规划；区分层次覆盖与最优性保证</text>
+    <text x="80" y="245" font-size="28" fill="#4874CB" data-max-width="2240">比较轴：决策覆盖什么层级？理论保证针对什么对象？</text>
+
+    <g id="card-1" transform="translate(80 280)">
+      <rect width="530" height="650" rx="22" fill="#F1F5FC" stroke="#4874CB" stroke-width="2"/>
+      <path d="M22 0H508Q530 0 530 22V8H0V22Q0 0 22 0" fill="#4874CB"/>
+      <text x="28" y="54" font-size="32" font-weight="700" data-max-width="474">静态博弈激励</text>
+      <text x="28" y="95" font-size="28" data-max-width="474">[1] Sarikaya &amp; Ercetin · 2020</text>
+      <path d="M28 118H502" stroke="#4874CB" stroke-opacity="0.3"/>
+      <rect x="28" y="143" width="474" height="82" rx="12" fill="#FFFFFF"/>
+      <use href="#server" x="44" y="156" width="58" height="58"/>
+      <text x="118" y="175" font-size="28" data-max-width="360">服务器：先定 CPU 单价</text>
+      <text x="118" y="209" font-size="28" data-max-width="360">静态预算 / 单次梯度步</text>
+      <path d="M265 228V253" stroke="#4874CB" stroke-width="3" marker-end="url(#arrow)"/>
+      <rect x="28" y="264" width="474" height="82" rx="12" fill="#FFFFFF"/>
+      <use href="#coins" x="44" y="277" width="58" height="58"/>
+      <text x="118" y="296" font-size="28" data-max-width="360">客户端：响应价格</text>
+      <text x="118" y="330" font-size="28" data-max-width="360">选择 CPU 资源投入</text>
+      <use href="#client" x="155" y="357" width="52" height="52"/>
+      <use href="#client" x="240" y="357" width="52" height="52"/>
+      <use href="#client" x="325" y="357" width="52" height="52"/>
+      <text x="28" y="447" font-size="32" font-weight="600" data-max-width="474">保证：跟随者均衡唯一</text>
+      <text x="28" y="490" font-size="28" data-max-width="474">同质情形：假设下领导者最优</text>
+      <text x="28" y="529" font-size="28" data-max-width="474">不等于跨轮动态联合最优证明</text>
+      <rect x="24" y="559" width="482" height="72" rx="12" fill="#FFFFFF"/>
+      <rect x="24" y="559" width="6" height="72" rx="3" fill="#EE822F"/>
+      <text x="44" y="589" font-size="28" font-weight="600" data-max-width="446">两阶段博弈</text>
+      <text x="44" y="621" font-size="28" font-weight="600" data-max-width="446">≠跨轮/轮内预算规划</text>
+    </g>
+
+    <g id="card-2" transform="translate(650 280)">
+      <rect width="530" height="650" rx="22" fill="#F1F5FC" stroke="#4874CB" stroke-width="2"/>
+      <path d="M22 0H508Q530 0 530 22V8H0V22Q0 0 22 0" fill="#4874CB"/>
+      <text x="28" y="54" font-size="32" font-weight="700" data-max-width="474">跨通信轮预算调度</text>
+      <text x="28" y="95" font-size="28" data-max-width="474">[2] BARA · IJCAI 2023</text>
+      <path d="M28 118H502" stroke="#4874CB" stroke-opacity="0.3"/>
+      <use href="#coins" x="38" y="136" width="56" height="56"/>
+      <text x="108" y="172" font-size="32" font-weight="600" data-max-width="386">统一总预算 B</text>
+      <path d="M265 191V210" stroke="#4874CB" stroke-width="3" marker-end="url(#arrow)"/>
+      <rect x="28" y="221" width="474" height="83" rx="12" fill="#FFFFFF"/>
+      <use href="#server" x="44" y="233" width="56" height="56"/>
+      <text x="118" y="253" font-size="28" data-max-width="360">参与人数 nt ↔ 轮预算 Bt</text>
+      <text x="118" y="286" font-size="28" data-max-width="360">GP 建模 + 在线贝叶斯搜索</text>
+      <path d="M265 308V330" stroke="#4874CB" stroke-width="3" marker-end="url(#arrow)"/>
+      <rect x="28" y="342" width="474" height="65" rx="12" fill="#FFFFFF"/>
+      <use href="#client" x="44" y="349" width="50" height="50"/>
+      <text x="110" y="382" font-size="28" data-max-width="368">接入既有轮内逆向拍卖</text>
+      <text x="28" y="447" font-size="32" font-weight="600" data-max-width="474">引用保证：人数搜索收敛</text>
+      <text x="28" y="490" font-size="28" data-max-width="474">搜索趋近最优参与人数</text>
+      <text x="28" y="529" font-size="28" data-max-width="474">非完整动态联合序列最优证明</text>
+      <rect x="24" y="559" width="482" height="72" rx="12" fill="#FFFFFF"/>
+      <rect x="24" y="559" width="6" height="72" rx="3" fill="#EE822F"/>
+      <text x="44" y="589" font-size="28" font-weight="600" data-max-width="446">搜索收敛</text>
+      <text x="44" y="621" font-size="28" font-weight="600" data-max-width="446">≠完整联合全局最优</text>
+    </g>
+
+    <g id="card-3" transform="translate(1220 280)">
+      <rect width="530" height="650" rx="22" fill="#F1F5FC" stroke="#4874CB" stroke-width="2"/>
+      <path d="M22 0H508Q530 0 530 22V8H0V22Q0 0 22 0" fill="#30C0B4"/>
+      <text x="28" y="54" font-size="32" font-weight="700" data-max-width="474">双层强化学习策略</text>
+      <text x="28" y="95" font-size="28" data-max-width="474">[3] MultiBOS-AFL · arXiv 2023</text>
+      <path d="M28 118H502" stroke="#4874CB" stroke-opacity="0.3"/>
+      <use href="#coins" x="38" y="133" width="50" height="50"/>
+      <text x="108" y="167" font-size="32" font-weight="600" data-max-width="386">统一总预算 B</text>
+      <path d="M265 183V201" stroke="#4874CB" stroke-width="3" marker-end="url(#arrow)"/>
+      <rect x="28" y="212" width="474" height="70" rx="12" fill="#FFFFFF"/>
+      <use href="#network" x="43" y="220" width="55" height="55"/>
+      <text x="115" y="241" font-size="28" data-max-width="363">InterBPA · DQN</text>
+      <text x="115" y="271" font-size="28" data-max-width="363">跨 session 预算节奏</text>
+      <path d="M265 285V301" stroke="#4874CB" stroke-width="3" marker-end="url(#arrow)"/>
+      <rect x="28" y="312" width="474" height="70" rx="12" fill="#FFFFFF"/>
+      <use href="#network" x="43" y="320" width="55" height="55"/>
+      <text x="115" y="341" font-size="28" data-max-width="363">IntraBA · DQN</text>
+      <text x="115" y="371" font-size="28" data-max-width="363">session 内竞价 → 客户端</text>
+      <text x="28" y="421" font-size="28" fill="#4874CB" data-max-width="474">session 是含多轮的训练任务</text>
+      <text x="28" y="465" font-size="32" font-weight="600" data-max-width="474">全文：未建立实施策略的</text>
+      <text x="28" y="505" font-size="28" data-max-width="474">联合全局最优 / 近似差距保证</text>
+      <text x="28" y="542" font-size="28" data-max-width="474">理论最优目标 ≠ DQN 策略保证</text>
+      <rect x="24" y="559" width="482" height="72" rx="12" fill="#FFFFFF"/>
+      <rect x="24" y="559" width="6" height="72" rx="3" fill="#EE822F"/>
+      <text x="44" y="589" font-size="28" font-weight="600" data-max-width="446">有两层决策，未建立</text>
+      <text x="44" y="621" font-size="28" font-weight="600" data-max-width="446">联合全局最优保证</text>
+    </g>
+
+    <g id="card-4" transform="translate(1790 280)">
+      <rect width="530" height="650" rx="22" fill="#F1F5FC" stroke="#4874CB" stroke-width="2"/>
+      <path d="M22 0H508Q530 0 530 22V8H0V22Q0 0 22 0" fill="#30C0B4"/>
+      <text x="28" y="54" font-size="32" font-weight="700" data-max-width="474">双层多目标策略</text>
+      <text x="28" y="95" font-size="28" data-max-width="474">[4] EURO-AFL · IJCNN 2024</text>
+      <path d="M28 118H502" stroke="#4874CB" stroke-opacity="0.3"/>
+      <use href="#coins" x="38" y="133" width="50" height="50"/>
+      <text x="108" y="167" font-size="32" font-weight="600" data-max-width="386">统一总预算 B</text>
+      <path d="M265 183V201" stroke="#4874CB" stroke-width="3" marker-end="url(#arrow)"/>
+      <rect x="28" y="212" width="474" height="70" rx="12" fill="#FFFFFF"/>
+      <use href="#network" x="43" y="220" width="55" height="55"/>
+      <text x="115" y="241" font-size="28" data-max-width="363">层次强化学习</text>
+      <text x="115" y="271" font-size="28" data-max-width="363">跨 session 预算节奏</text>
+      <path d="M265 285V301" stroke="#4874CB" stroke-width="3" marker-end="url(#arrow)"/>
+      <rect x="28" y="312" width="474" height="70" rx="12" fill="#FFFFFF"/>
+      <use href="#client" x="43" y="320" width="55" height="55"/>
+      <text x="115" y="341" font-size="28" data-max-width="363">session 内预算分配</text>
+      <text x="115" y="371" font-size="28" data-max-width="363">招募客户端并开展训练</text>
+      <text x="28" y="421" font-size="28" fill="#4874CB" data-max-width="474">session ≠ 单个通信轮</text>
+      <text x="28" y="465" font-size="32" font-weight="600" data-max-width="474">目标：效用最大 + 等待最小</text>
+      <text x="28" y="505" font-size="28" data-max-width="474">摘要确认跨 session / 内分配</text>
+      <text x="28" y="542" font-size="28" data-max-width="474">全文未取得，不推断定理有无</text>
+      <rect x="24" y="559" width="482" height="72" rx="12" fill="#FFFFFF"/>
+      <rect x="24" y="559" width="6" height="72" rx="3" fill="#EE822F"/>
+      <text x="44" y="589" font-size="28" font-weight="600" data-max-width="446">目前仅核实摘要；</text>
+      <text x="44" y="621" font-size="28" font-weight="600" data-max-width="446">最优性结论待核验</text>
+    </g>
+
+    <rect x="80" y="980" width="2240" height="145" rx="18" fill="#F1F5FC"/>
+    <rect x="80" y="980" width="10" height="145" rx="5" fill="#EE822F"/>
+    <text x="112" y="1025" font-size="34" font-weight="700" data-max-width="2176">研究空缺：统一总预算下的跨轮决策与轮内分配，需要明确的联合最优性证明</text>
+    <text x="112" y="1070" font-size="32" data-max-width="2176">本研究：轮间收敛感知策略 + 给定预算与参与集合下的轮内解析均衡；</text>
+    <text x="112" y="1110" font-size="32" font-weight="600" fill="#4874CB" data-max-width="2176">不宣称完整联合全局最优</text>
+
+    <g font-size="24">
+      <text x="80" y="1158" data-max-width="2240">[1] Sarikaya &amp; Ercetin. Motivating Workers in Federated Learning: A Stackelberg Game Perspective. IEEE Networking Letters, 2020. DOI: 10.1109/LNET.2019.2947144</text>
+      <text x="80" y="1197" data-max-width="2240">[2] Yang et al. BARA: Efficient Incentive Mechanism with Online Reward Budget Allocation in Cross-Silo Federated Learning. IJCAI, 2023. DOI: 10.24963/ijcai.2023/498</text>
+      <text x="80" y="1236" data-max-width="2240">[3] Tang &amp; Yu. Multi-Session Budget Optimization for Forward Auction-based Federated Learning (MultiBOS-AFL). 2023. arXiv: 2311.12548</text>
+      <text x="80" y="1275" data-max-width="2240">[4] Tang &amp; Yu. Multi-Session Multi-Objective Budget Optimization for Auction-based Federated Learning (EURO-AFL). IJCNN, 2024. DOI: 10.1109/IJCNN60899.2024.10650637</text>
+    </g>
+    <text x="80" y="1320" font-size="28" fill="#4874CB" data-max-width="2240">代表性文献对比，非穷尽综述；session 与通信轮、博弈阶段与预算层级不能混同</text>
+  </g>
+</svg>

@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+
+# 大型/二进制数据与中间产物（如需版本化可移除对应行）
+*.pth
+
+# 保留 timelist/ 下的准确率曲线 (.npy)，但忽略结果中间产物
+results_new/**/*.npy
+
+# 原始数据集（可自动下载，不入库）
+fl_training/data/

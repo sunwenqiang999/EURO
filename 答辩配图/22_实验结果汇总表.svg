@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1350" viewBox="0 0 2400 1350"><style>text{font-family:PingFang SC,Microsoft YaHei,Arial,sans-serif;fill:#17345C;font-variant-numeric:tabular-nums}</style>
+<rect x="0" y="0" width="2400" height="1350" fill="white" />
+<rect x="72" y="66" width="9" height="65" fill="#4874CB" rx="4"/>
+<text x="108" y="117" font-size="52" font-weight="600">实验结果表：达到目标精度的累计耗时</text>
+<text x="108" y="181" font-size="31" fill="#4874CB">GBSFL 与四种基线方法对比 · 单位：秒（s） · 越小越好</text>
+<rect x="100" y="285" width="2200" height="86" fill="#17345C" rx="10"/>
+<text x="270" y="338" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">数据集</text>
+<text x="540" y="338" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">目标精度</text>
+<text x="752.5" y="338" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">GBSFL</text>
+<text x="977.5" y="338" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">EURO-AFL</text>
+<text x="1202.5" y="338" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">Random</text>
+<text x="1427.5" y="338" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">FedAvg</text>
+<text x="1652.5" y="338" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">Fair</text>
+<text x="1877.5" y="338" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">最优基线</text>
+<text x="2145" y="338" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">耗时降低</text>
+<rect x="100" y="371" width="2200" height="142" fill="#FFFFFF" />
+<rect x="640" y="371" width="225" height="142" fill="#EAF1FF" />
+<text x="124" y="456" font-size="37"  >MNIST</text>
+<text x="540" y="456" font-size="37" text-anchor="middle" >99%</text>
+<text x="840" y="456" font-size="37" text-anchor="end" font-weight="700" style="fill:#315FBB">355.68</text>
+<text x="1065" y="456" font-size="37" text-anchor="end" >509.25</text>
+<text x="1290" y="456" font-size="37" text-anchor="end" >1045.35</text>
+<text x="1515" y="456" font-size="37" text-anchor="end" >677.22</text>
+<text x="1740" y="456" font-size="37" text-anchor="end" >574.29</text>
+<text x="1877.5" y="456" font-size="37" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="456" font-size="37" text-anchor="middle" font-weight="600" style="fill:#159B91">30.2%</text>
+<line x1="100" y1="513" x2="2300" y2="513" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="513" width="2200" height="142" fill="#F5F7FB" />
+<rect x="640" y="513" width="225" height="142" fill="#EAF1FF" />
+<text x="124" y="598" font-size="37"  >Fashion-MNIST</text>
+<text x="540" y="598" font-size="37" text-anchor="middle" >90%</text>
+<text x="840" y="598" font-size="37" text-anchor="end" font-weight="700" style="fill:#315FBB">466.57</text>
+<text x="1065" y="598" font-size="37" text-anchor="end" >667.64</text>
+<text x="1290" y="598" font-size="37" text-anchor="end" >1272.49</text>
+<text x="1515" y="598" font-size="37" text-anchor="end" >892.04</text>
+<text x="1740" y="598" font-size="37" text-anchor="end" >751.79</text>
+<text x="1877.5" y="598" font-size="37" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="598" font-size="37" text-anchor="middle" font-weight="600" style="fill:#159B91">30.1%</text>
+<line x1="100" y1="655" x2="2300" y2="655" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="655" width="2200" height="142" fill="#FFFFFF" />
+<rect x="640" y="655" width="225" height="142" fill="#EAF1FF" />
+<text x="124" y="740" font-size="37"  >CIFAR-10</text>
+<text x="540" y="740" font-size="37" text-anchor="middle" >95%</text>
+<text x="840" y="740" font-size="37" text-anchor="end" font-weight="700" style="fill:#315FBB">1139.59</text>
+<text x="1065" y="740" font-size="37" text-anchor="end" >1799.17</text>
+<text x="1290" y="740" font-size="37" text-anchor="end" >3977.25</text>
+<text x="1515" y="740" font-size="37" text-anchor="end" >2583.10</text>
+<text x="1740" y="740" font-size="37" text-anchor="end" >2157.08</text>
+<text x="1877.5" y="740" font-size="37" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="740" font-size="37" text-anchor="middle" font-weight="600" style="fill:#159B91">36.7%</text>
+<line x1="100" y1="797" x2="2300" y2="797" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="797" width="2200" height="142" fill="#F5F7FB" />
+<rect x="640" y="797" width="225" height="142" fill="#EAF1FF" />
+<text x="124" y="882" font-size="37"  >CIFAR-100</text>
+<text x="540" y="882" font-size="37" text-anchor="middle" >90%</text>
+<text x="840" y="882" font-size="37" text-anchor="end" font-weight="700" style="fill:#315FBB">2501.05</text>
+<text x="1065" y="882" font-size="37" text-anchor="end" >4412.21</text>
+<text x="1290" y="882" font-size="37" text-anchor="end" >8640.69</text>
+<text x="1515" y="882" font-size="37" text-anchor="end" >6280.40</text>
+<text x="1740" y="882" font-size="37" text-anchor="end" >5019.27</text>
+<text x="1877.5" y="882" font-size="37" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="882" font-size="37" text-anchor="middle" font-weight="600" style="fill:#159B91">43.3%</text>
+<line x1="100" y1="939" x2="2300" y2="939" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="440" y1="371" x2="440" y2="939" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="640" y1="371" x2="640" y2="939" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="865" y1="371" x2="865" y2="939" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="1090" y1="371" x2="1090" y2="939" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="1315" y1="371" x2="1315" y2="939" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="1540" y1="371" x2="1540" y2="939" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="1765" y1="371" x2="1765" y2="939" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="1990" y1="371" x2="1990" y2="939" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="100" y1="939" x2="2300" y2="939" stroke="#17345C" stroke-width="3"/>
+<rect x="100" y="1020" width="2200" height="100" fill="#F1F5FC" rx="12"/>
+<text x="134" y="1082" font-size="35" font-weight="500">表中四组代表性目标下，GBSFL 较对应最优基线减少累计耗时 30.1%–43.3%。</text>
+<text x="100" y="1187" font-size="27" >注：各方法共用既有准确率轨迹；耗时累计至首次达到目标精度的轮次（包含该轮）。</text>
+<text x="100" y="1231" font-size="27" >耗时降低 =（最优基线耗时 − GBSFL 耗时）/ 最优基线耗时；FedAvg 为均匀预算基线。</text>
+<text x="100" y="1275" font-size="25" style="fill:#64758E">数据来源：现有整体对比实验的逐轮记录；单次模拟结果，非实际程序运行耗时。</text>
+</svg>

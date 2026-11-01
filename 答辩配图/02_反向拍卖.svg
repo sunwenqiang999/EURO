@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" font-family="PingFang SC, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="blue-arrow" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 Z" fill="#4874CB"/></marker>
+    <marker id="orange-arrow" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 Z" fill="#EE822F"/></marker>
+    <g id="device" fill="white" stroke="#17345C" stroke-width="3.5" stroke-linejoin="round"><rect x="-45" y="-30" width="90" height="56" rx="6"/><path d="M-56 37 L-45 26 H45 L56 37 Z"/><path d="M-22-6 H22 M-22 7 H9" stroke="#4874CB"/></g>
+  </defs>
+  <rect width="1600" height="900" fill="white"/>
+  <rect x="64" y="62" width="8" height="65" rx="4" fill="#4874CB"/>
+  <text x="96" y="103" font-size="44" font-weight="700" fill="#17345C">反向拍卖：买方采购客户端计算服务</text>
+  <text x="96" y="153" font-size="27" fill="#4874CB">客户端提交报价与能力信息，机制综合预算和效用决定参与者</text>
+
+  <rect x="65" y="225" width="350" height="423" rx="25" fill="#F1F5FC"/>
+  <text x="240" y="271" text-anchor="middle" font-size="32" font-weight="700" fill="#17345C">任务发布者</text>
+  <text x="240" y="309" text-anchor="middle" font-size="26" fill="#4874CB">买方 · 采购训练服务</text>
+  <g fill="white" stroke="#17345C" stroke-width="4"><rect x="184" y="345" width="112" height="42" rx="7"/><rect x="184" y="398" width="112" height="42" rx="7"/></g>
+  <g fill="#30C0B4"><circle cx="202" cy="366" r="5"/><circle cx="202" cy="419" r="5"/></g>
+  <g stroke="#4874CB" stroke-width="4"><path d="M226 366 H277"/><path d="M226 419 H277"/></g>
+  <rect x="112" y="473" width="256" height="71" rx="14" fill="white" stroke="#EE822F" stroke-width="2"/>
+  <text x="240" y="520" text-anchor="middle" font-size="35" font-weight="700" fill="#EE822F">任务预算 30</text>
+  <text x="240" y="591" text-anchor="middle" font-size="26" fill="#17345C">发布任务与预算约束</text>
+
+  <path d="M415 362 H641" fill="none" stroke="#4874CB" stroke-width="5" marker-end="url(#blue-arrow)"/>
+  <text x="528" y="327" text-anchor="middle" font-size="26" fill="#4874CB">任务公告</text>
+  <path d="M650 477 H427" fill="none" stroke="#4874CB" stroke-width="5" marker-end="url(#blue-arrow)"/>
+  <text x="531" y="519" text-anchor="middle" font-size="25" fill="#4874CB">报价与能力</text>
+
+  <path d="M650 280 V574 M650 280 H715 M650 427 H715 M650 574 H715" fill="none" stroke="#4874CB" stroke-width="3"/>
+  <text x="1092" y="217" text-anchor="middle" font-size="29" font-weight="600" fill="#17345C">计算服务提供方：三个异质客户端</text>
+  <rect x="715" y="241" width="818" height="119" rx="18" fill="#F1F5FC"/>
+  <rect x="715" y="388" width="818" height="119" rx="18" fill="#F1F5FC"/>
+  <rect x="715" y="535" width="818" height="119" rx="18" fill="#F1F5FC"/>
+  <use href="#device" transform="translate(793 293)"/>
+  <use href="#device" transform="translate(793 440)"/>
+  <use href="#device" transform="translate(793 587)"/>
+  <g font-size="27" fill="#17345C">
+    <text x="873" y="286" font-weight="700">客户端甲</text><text x="873" y="326" fill="#EE822F">报价 12</text>
+    <text x="873" y="433" font-weight="700">客户端乙</text><text x="873" y="473" fill="#EE822F">报价 20</text>
+    <text x="873" y="580" font-weight="700">客户端丙</text><text x="873" y="620" fill="#EE822F">报价 16</text>
+  </g>
+  <g font-size="24" fill="#17345C">
+    <text x="1090" y="280">数据质量：高</text><text x="1090" y="326">资源：充足</text>
+    <text x="1090" y="427">数据质量：中</text><text x="1090" y="473">资源：充足</text>
+    <text x="1090" y="574">数据质量：高</text><text x="1090" y="620">资源：适中</text>
+  </g>
+  <g fill="#30C0B4">
+    <rect x="1288" y="262" width="173" height="13" rx="6"/><rect x="1288" y="308" width="173" height="13" rx="6"/>
+    <rect x="1288" y="409" width="110" height="13" rx="6"/><rect x="1288" y="455" width="173" height="13" rx="6"/>
+    <rect x="1288" y="556" width="173" height="13" rx="6"/><rect x="1288" y="602" width="110" height="13" rx="6"/>
+  </g>
+
+  <rect x="65" y="692" width="610" height="110" rx="18" fill="#F1F5FC" stroke="#4874CB" stroke-width="2"/>
+  <circle cx="103" cy="724" r="16" fill="#4874CB"/>
+  <text x="132" y="735" font-size="28" font-weight="700" fill="#17345C">按预算与效用选择</text>
+  <text x="94" y="777" font-size="25" fill="#17345C">示例选甲、丙：报价合计 28 ≤ 30</text>
+  <path d="M677 747 H745" stroke="#4874CB" stroke-width="5" marker-end="url(#blue-arrow)"/>
+  <rect x="756" y="692" width="284" height="110" rx="18" fill="#F1F5FC"/>
+  <path d="M786 725 L797 736 L817 713" fill="none" stroke="#30C0B4" stroke-width="4"/>
+  <text x="836" y="736" font-size="28" font-weight="700" fill="#17345C">执行训练</text>
+  <text x="898" y="777" text-anchor="middle" font-size="25" fill="#17345C">提交模型更新</text>
+  <path d="M1042 747 H1110" stroke="#EE822F" stroke-width="5" marker-end="url(#orange-arrow)"/>
+  <rect x="1121" y="692" width="412" height="110" rx="18" fill="#FFF5EC" stroke="#EE822F" stroke-width="2"/>
+  <g fill="none" stroke="#EE822F" stroke-width="3"><ellipse cx="1163" cy="719" rx="17" ry="7"/><path d="M1146 719 V736 C1146 746 1180 746 1180 736 V719 M1146 728 C1146 738 1180 738 1180 728"/></g>
+  <text x="1197" y="736" font-size="28" font-weight="700" fill="#17345C">按机制规则支付</text>
+  <text x="1327" y="777" text-anchor="middle" font-size="25" fill="#EE822F">实际支付受总预算约束</text>
+
+  <text x="800" y="844" text-anchor="middle" font-size="24" fill="#17345C">报价仅为示意；甲、丙组合用于展示筛选，不代表总是选择最低报价。</text>
+  <text x="800" y="878" text-anchor="middle" font-size="24" font-weight="600" fill="#EE822F">支付由机制规则确定，不等同于报价；报价合计不代表实际支付合计。</text>
+</svg>

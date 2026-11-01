@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" font-family="PingFang SC, Microsoft YaHei, sans-serif">
+  <defs>
+    <marker id="blue-arrow" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 Z" fill="#4874CB"/></marker>
+    <marker id="orange-arrow" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L10 5 L0 10 Z" fill="#EE822F"/></marker>
+    <g id="laptop" fill="white" stroke="#17345C" stroke-width="4" stroke-linejoin="round"><rect x="-61" y="-43" width="122" height="77" rx="9"/><path d="M-76 48 L-61 34 H61 L76 48 Z"/><path d="M-19 42 H19"/></g>
+    <g id="lock" fill="none" stroke="#30C0B4" stroke-width="4"><rect x="-15" y="-2" width="30" height="25" rx="5"/><path d="M-9-2 V-12 A9 9 0 0 1 9-12 V-2"/><path d="M0 7 V15"/></g>
+  </defs>
+  <rect width="1600" height="900" fill="white"/>
+  <rect x="64" y="62" width="8" height="65" rx="4" fill="#4874CB"/>
+  <text x="96" y="103" font-size="44" font-weight="700" fill="#17345C">激励机制：让资源贡献获得合理回报</text>
+  <text x="96" y="153" font-size="27" fill="#4874CB">异质客户端参与本地训练，服务器协调贡献与奖励</text>
+
+  <rect x="66" y="218" width="323" height="419" rx="24" fill="#F1F5FC"/>
+  <rect x="1211" y="218" width="323" height="419" rx="24" fill="#F1F5FC"/>
+  <rect x="620" y="582" width="360" height="217" rx="24" fill="#F1F5FC"/>
+
+  <text x="228" y="267" text-anchor="middle" font-size="31" font-weight="700" fill="#17345C">客户端甲</text>
+  <use href="#laptop" transform="translate(228 353)"/>
+  <path d="M189 354 H202 L210 336 L220 369 L232 342 L243 354 H263" fill="none" stroke="#4874CB" stroke-width="4"/>
+  <text x="228" y="440" text-anchor="middle" font-size="27" fill="#17345C">高算力 · 通信快</text>
+  <use href="#lock" transform="translate(113 495)"/>
+  <text x="147" y="507" font-size="25" fill="#17345C">本地数据留在设备</text>
+  <rect x="107" y="548" width="240" height="51" rx="12" fill="white"/>
+  <text x="227" y="582" text-anchor="middle" font-size="25" fill="#4874CB">计算与通信成本</text>
+
+  <text x="1373" y="267" text-anchor="middle" font-size="31" font-weight="700" fill="#17345C">客户端乙</text>
+  <use href="#laptop" transform="translate(1373 353)"/>
+  <rect x="1341" y="341" width="64" height="21" rx="5" fill="#30C0B4"/>
+  <text x="1373" y="440" text-anchor="middle" font-size="27" fill="#17345C">低算力 · 数据优</text>
+  <use href="#lock" transform="translate(1258 495)"/>
+  <text x="1292" y="507" font-size="25" fill="#17345C">本地数据留在设备</text>
+  <rect x="1252" y="548" width="240" height="51" rx="12" fill="white"/>
+  <text x="1372" y="582" text-anchor="middle" font-size="25" fill="#4874CB">计算与通信成本</text>
+
+  <text x="800" y="622" text-anchor="middle" font-size="30" font-weight="700" fill="#17345C">客户端丙</text>
+  <use href="#laptop" transform="translate(710 686) scale(.75)"/>
+  <text x="787" y="677" font-size="25" fill="#17345C">中等算力</text>
+  <text x="787" y="715" font-size="25" fill="#17345C">通信成本高</text>
+  <use href="#lock" transform="translate(663 754) scale(.8)"/>
+  <text x="690" y="764" font-size="24" fill="#17345C">本地数据留在设备</text>
+
+  <rect x="626" y="243" width="348" height="278" rx="27" fill="#F1F5FC" stroke="#4874CB" stroke-width="2"/>
+  <text x="800" y="289" text-anchor="middle" font-size="33" font-weight="700" fill="#17345C">中央服务器</text>
+  <g fill="white" stroke="#17345C" stroke-width="4">
+    <rect x="739" y="316" width="122" height="42" rx="8"/>
+    <rect x="739" y="368" width="122" height="42" rx="8"/>
+  </g>
+  <g fill="#30C0B4"><circle cx="757" cy="337" r="5"/><circle cx="757" cy="389" r="5"/></g>
+  <g stroke="#4874CB" stroke-width="4"><path d="M779 337 H845"/><path d="M779 389 H845"/></g>
+  <text x="800" y="450" text-anchor="middle" font-size="27" fill="#17345C">聚合更新 · 分配奖励</text>
+  <text x="800" y="489" text-anchor="middle" font-size="25" fill="#EE822F">奖励总额 ≤ 总预算</text>
+
+  <g fill="none" stroke-width="5" stroke-linecap="round">
+    <path d="M389 337 H614" stroke="#4874CB" marker-end="url(#blue-arrow)"/>
+    <path d="M626 435 H401" stroke="#EE822F" marker-end="url(#orange-arrow)"/>
+    <path d="M1211 337 H986" stroke="#4874CB" marker-end="url(#blue-arrow)"/>
+    <path d="M974 435 H1199" stroke="#EE822F" marker-end="url(#orange-arrow)"/>
+    <path d="M746 582 V533" stroke="#4874CB" marker-end="url(#blue-arrow)"/>
+    <path d="M853 521 V570" stroke="#EE822F" marker-end="url(#orange-arrow)"/>
+  </g>
+  <g font-size="24" text-anchor="middle">
+    <text x="503" y="304" fill="#4874CB">模型更新</text>
+    <text x="503" y="373" fill="#4874CB">资源贡献</text>
+    <text x="503" y="477" fill="#EE822F">奖励</text>
+    <text x="1095" y="304" fill="#4874CB">模型更新</text>
+    <text x="1095" y="373" fill="#4874CB">资源贡献</text>
+    <text x="1095" y="477" fill="#EE822F">奖励</text>
+  </g>
+  <text x="717" y="560" text-anchor="end" font-size="23" fill="#4874CB">更新 / 贡献</text>
+  <text x="880" y="560" font-size="23" fill="#EE822F">奖励</text>
+
+  <rect x="66" y="826" width="1468" height="54" rx="14" fill="#F1F5FC"/>
+  <text x="800" y="862" text-anchor="middle" font-size="29" font-weight="600" fill="#17345C">客户端收益 = 奖励 − 计算与通信成本</text>
+  <path d="M110 707 H190" stroke="#4874CB" stroke-width="5" marker-end="url(#blue-arrow)"/>
+  <text x="211" y="716" font-size="25" fill="#17345C">贡献流</text>
+  <path d="M110 757 H190" stroke="#EE822F" stroke-width="5" marker-end="url(#orange-arrow)"/>
+  <text x="211" y="766" font-size="25" fill="#17345C">奖励流</text>
+  <text x="1228" y="709" font-size="27" font-weight="600" fill="#30C0B4">隐私边界</text>
+  <text x="1228" y="751" font-size="25" fill="#17345C">仅交换更新与贡献信息</text>
+  <text x="1228" y="789" font-size="25" fill="#17345C">不上传本地原始数据</text>
+</svg>

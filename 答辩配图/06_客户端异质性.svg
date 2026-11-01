@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#FFFFFF"/>
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" fill="#17345C">
+    <rect x="64" y="58" width="8" height="54" rx="4" fill="#4874CB"/>
+    <text x="92" y="99" font-size="42" font-weight="700">客户端异质性：最慢完成者决定轮次时长</text>
+    <text x="92" y="145" font-size="26" fill="#61728A">计算能力与上传带宽共同影响完成时间，快客户端在同步屏障前等待</text>
+
+    <rect x="64" y="188" width="1472" height="66" rx="16" fill="#F1F5FC"/>
+    <text x="91" y="232" font-size="27" font-weight="600">设备与资源差异</text>
+    <text x="611" y="232" font-size="27" font-weight="600">同一训练轮的完成过程</text>
+    <rect x="1138" y="210" width="27" height="20" rx="4" fill="#4874CB"/>
+    <text x="1175" y="231" font-size="22">计算</text>
+    <rect x="1245" y="210" width="27" height="20" rx="4" fill="#30C0B4"/>
+    <text x="1282" y="231" font-size="22">上传</text>
+    <rect x="1352" y="210" width="27" height="20" rx="4" fill="#F1F5FC" stroke="#8C9CB1" stroke-dasharray="4 3"/>
+    <text x="1389" y="231" font-size="22">等待</text>
+
+    <path d="M596 303 V678 M778 303 V678 M960 303 V678 M1142 303 V678 M1324 303 V678" fill="none" stroke="#E7EDF6" stroke-width="2"/>
+    <path d="M1438 292 V697" stroke="#EE822F" stroke-width="3" stroke-dasharray="8 6" fill="none"/>
+    <text x="1438" y="284" font-size="23" text-anchor="middle" fill="#EE822F">公共轮次结束</text>
+
+    <rect x="64" y="305" width="490" height="108" rx="16" fill="#F1F5FC"/>
+    <g fill="#FFFFFF" stroke="#4874CB" stroke-width="3">
+      <rect x="91" y="323" width="43" height="73" rx="8"/>
+      <path d="M105 335 H120 M104 384 H121"/>
+      <rect x="101" y="346" width="23" height="23" rx="3" fill="#F1F5FC"/>
+    </g>
+    <text x="159" y="345" font-size="29" font-weight="600">手机</text>
+    <text x="159" y="385" font-size="23" fill="#61728A">算力较低 · 上传带宽较低</text>
+    <rect x="596" y="332" width="574" height="51" rx="7" fill="#4874CB"/>
+    <rect x="1170" y="332" width="268" height="51" rx="7" fill="#30C0B4"/>
+    <path d="M1170 333 V382" stroke="#FFFFFF" stroke-width="3"/>
+    <text x="883" y="366" font-size="26" fill="#FFFFFF" text-anchor="middle">本地计算</text>
+    <text x="1304" y="366" font-size="25" text-anchor="middle">模型上传</text>
+    <circle cx="1438" cy="357" r="7" fill="#EE822F"/>
+    <text x="1438" y="410" font-size="23" text-anchor="end" fill="#EE822F">最慢客户端完成</text>
+
+    <rect x="64" y="439" width="490" height="108" rx="16" fill="#F1F5FC"/>
+    <g fill="#FFFFFF" stroke="#4874CB" stroke-width="3">
+      <rect x="83" y="458" width="69" height="49" rx="4"/>
+      <path d="M73 516 H162 L152 527 H83 Z M97 475 H137 M97 489 H123"/>
+    </g>
+    <text x="180" y="479" font-size="29" font-weight="600">笔记本</text>
+    <text x="180" y="519" font-size="23" fill="#61728A">算力中等 · 上传带宽较高</text>
+    <rect x="596" y="466" width="364" height="51" rx="7" fill="#4874CB"/>
+    <rect x="960" y="466" width="124" height="51" rx="7" fill="#30C0B4"/>
+    <path d="M960 467 V516" stroke="#FFFFFF" stroke-width="3"/>
+    <rect x="1084" y="466" width="354" height="51" rx="7" fill="#F1F5FC" stroke="#8C9CB1" stroke-width="2" stroke-dasharray="7 5"/>
+    <text x="778" y="500" font-size="26" fill="#FFFFFF" text-anchor="middle">本地计算</text>
+    <text x="1022" y="500" font-size="24" text-anchor="middle">上传</text>
+    <text x="1261" y="500" font-size="25" text-anchor="middle" fill="#61728A">等待同步</text>
+    <text x="1084" y="545" font-size="22" text-anchor="middle" fill="#61728A">完成</text>
+
+    <rect x="64" y="573" width="490" height="108" rx="16" fill="#F1F5FC"/>
+    <g fill="#FFFFFF" stroke="#4874CB" stroke-width="3">
+      <rect x="83" y="592" width="60" height="42" rx="4"/>
+      <path d="M113 634 V647 M98 650 H129 M95 606 H131 M95 619 H117"/>
+      <rect x="152" y="592" width="26" height="64" rx="4"/>
+      <path d="M159 606 H171 M159 620 H171"/>
+    </g>
+    <text x="199" y="613" font-size="29" font-weight="600">工作站</text>
+    <text x="199" y="653" font-size="23" fill="#61728A">算力较高 · 上传带宽中等</text>
+    <rect x="596" y="600" width="219" height="51" rx="7" fill="#4874CB"/>
+    <rect x="815" y="600" width="194" height="51" rx="7" fill="#30C0B4"/>
+    <path d="M815 601 V650" stroke="#FFFFFF" stroke-width="3"/>
+    <rect x="1009" y="600" width="429" height="51" rx="7" fill="#F1F5FC" stroke="#8C9CB1" stroke-width="2" stroke-dasharray="7 5"/>
+    <text x="705" y="634" font-size="26" fill="#FFFFFF" text-anchor="middle">本地计算</text>
+    <text x="912" y="634" font-size="25" text-anchor="middle">模型上传</text>
+    <text x="1223" y="634" font-size="25" text-anchor="middle" fill="#61728A">等待同步</text>
+    <text x="1009" y="679" font-size="22" text-anchor="middle" fill="#61728A">完成</text>
+
+    <path d="M596 710 H1438 M596 705 V715 M1438 705 V715" stroke="#8C9CB1" stroke-width="2" fill="none"/>
+    <text x="596" y="747" font-size="22" fill="#61728A">轮次开始</text>
+    <text x="1017" y="747" font-size="22" text-anchor="middle" fill="#61728A">时间 →（条长为概念示意，无数值刻度）</text>
+
+    <rect x="64" y="776" width="1472" height="89" rx="18" fill="#17345C"/>
+    <text x="91" y="831" font-size="28" font-weight="600" fill="#FFFFFF">训练时间 = 计算时间 + 上传时间</text>
+    <path d="M736 798 V845" stroke="#547094" stroke-width="2"/>
+    <text x="770" y="831" font-size="28" font-weight="600" fill="#FFFFFF">本轮时间 = max 各客户端完成时间</text>
+  </g>
+</svg>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L10 6 L1 11" fill="none" stroke="#4874CB" stroke-width="2.5"/></marker>
+    <marker id="tealArrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L10 6 L1 11" fill="none" stroke="#30C0B4" stroke-width="2.5"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="#FFFFFF"/>
+  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" fill="#17345C">
+    <rect x="64" y="58" width="8" height="54" rx="4" fill="#4874CB"/>
+    <text x="92" y="99" font-size="42" font-weight="700">两阶段预算分配：轮间规划与轮内激励</text>
+    <text x="92" y="145" font-size="26" fill="#61728A">以收敛进展分配总预算，以客户端响应改善本轮完成时间</text>
+
+    <rect x="64" y="183" width="1472" height="310" rx="24" fill="#F1F5FC"/>
+    <text x="94" y="229" font-size="30" font-weight="700">阶段一 · 轮间预算分配</text>
+    <rect x="94" y="267" width="220" height="145" rx="18" fill="#17345C"/>
+    <text x="204" y="311" font-size="28" fill="#FFFFFF" text-anchor="middle">总预算</text>
+    <text x="204" y="373" font-size="48" font-weight="700" fill="#FFFFFF" text-anchor="middle">B</text>
+    <path d="M334 340 H414" stroke="#4874CB" stroke-width="3" marker-end="url(#arrow)" fill="none"/>
+    <text x="466" y="267" font-size="23" fill="#61728A">轮次预算</text>
+    <path d="M466 284 V412 H1023" stroke="#8C9CB1" stroke-width="2" fill="none"/>
+    <rect x="500" y="290" width="62" height="122" rx="5" fill="#4874CB"/>
+    <rect x="591" y="312" width="62" height="100" rx="5" fill="#4874CB" opacity="0.82"/>
+    <text x="697" y="377" font-size="30" text-anchor="middle" fill="#61728A">…</text>
+    <rect x="746" y="340" width="62" height="72" rx="5" fill="#EE822F"/>
+    <text x="853" y="394" font-size="30" text-anchor="middle" fill="#61728A">…</text>
+    <rect x="908" y="374" width="62" height="38" rx="5" fill="#4874CB" opacity="0.55"/>
+    <text x="531" y="444" font-size="26" text-anchor="middle">B1</text>
+    <text x="622" y="444" font-size="26" text-anchor="middle">B2</text>
+    <text x="777" y="444" font-size="26" text-anchor="middle" fill="#EE822F" font-weight="700">Bk</text>
+    <text x="939" y="444" font-size="26" text-anchor="middle">BT</text>
+    <text x="1024" y="443" font-size="22" fill="#61728A">训练轮</text>
+    <rect x="1102" y="263" width="398" height="155" rx="16" fill="#FFFFFF"/>
+    <text x="1130" y="307" font-size="28" font-weight="600">收敛感知</text>
+    <text x="1130" y="350" font-size="24" fill="#61728A">依据精度增量反馈</text>
+    <text x="1130" y="387" font-size="24" fill="#61728A">动态调整后续轮次预算</text>
+    <path d="M1286 426 V467 H1020" fill="none" stroke="#30C0B4" stroke-width="2.5" marker-end="url(#tealArrow)"/>
+    <text x="1290" y="459" font-size="22" fill="#61728A">训练结果反馈</text>
+    <text x="94" y="465" font-size="22" fill="#61728A">早期高、后期低：概念趋势示意</text>
+
+    <path d="M777 500 V530" fill="none" stroke="#EE822F" stroke-width="3"/>
+    <rect x="659" y="519" width="236" height="42" rx="21" fill="#FFFFFF" stroke="#EE822F" stroke-width="2"/>
+    <text x="777" y="548" font-size="23" text-anchor="middle" fill="#EE822F">展开第 k 轮</text>
+
+    <text x="64" y="598" font-size="30" font-weight="700">阶段二 · 轮内客户端奖励分配</text>
+    <text x="1017" y="598" font-size="24" fill="#61728A">奖励分配 → CPU 频率响应</text>
+    <rect x="64" y="625" width="350" height="193" rx="20" fill="#F1F5FC"/>
+    <text x="90" y="667" font-size="28" font-weight="600">本轮可用预算 Bk</text>
+    <rect x="90" y="694" width="120" height="41" rx="5" fill="#4874CB"/>
+    <rect x="214" y="694" width="76" height="41" rx="5" fill="#30C0B4"/>
+    <rect x="294" y="694" width="94" height="41" rx="5" fill="#EE822F"/>
+    <text x="150" y="722" font-size="22" fill="#FFFFFF" text-anchor="middle">奖励 1</text>
+    <text x="252" y="722" font-size="22" fill="#17345C" text-anchor="middle">奖励 2</text>
+    <text x="341" y="722" font-size="22" fill="#FFFFFF" text-anchor="middle">奖励 3</text>
+    <text x="90" y="780" font-size="23" fill="#61728A">奖励总额不超过本轮预算</text>
+    <path d="M432 718 H489" fill="none" stroke="#4874CB" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <rect x="511" y="625" width="659" height="193" rx="20" fill="#F1F5FC"/>
+    <path d="M729 645 V800 M949 645 V800" stroke="#D9E3F3" stroke-width="2"/>
+    <g fill="#FFFFFF" stroke="#4874CB" stroke-width="3">
+      <rect x="557" y="651" width="42" height="71" rx="7"/>
+      <path d="M569 711 H588"/>
+      <rect x="769" y="651" width="74" height="51" rx="4"/>
+      <path d="M759 710 H853 L843 721 H769 Z"/>
+      <rect x="995" y="651" width="69" height="47" rx="4"/>
+      <path d="M1030 698 V712 M1014 714 H1047"/>
+      <rect x="1075" y="651" width="26" height="64" rx="4"/>
+      <path d="M1081 665 H1095 M1081 677 H1095"/>
+    </g>
+    <text x="650" y="687" font-size="22" text-anchor="middle">客户端 1</text>
+    <text x="899" y="687" font-size="22" text-anchor="middle">客户端 2</text>
+    <text x="1038" y="755" font-size="24" text-anchor="middle">客户端 3</text>
+    <text x="620" y="758" font-size="24" text-anchor="middle">选择频率 δ1</text>
+    <text x="840" y="758" font-size="24" text-anchor="middle">选择频率 δ2</text>
+    <text x="1038" y="793" font-size="24" text-anchor="middle">选择频率 δ3</text>
+    <text x="620" y="793" font-size="22" text-anchor="middle" fill="#4874CB">计算响应</text>
+    <text x="840" y="793" font-size="22" text-anchor="middle" fill="#30C0B4">计算响应</text>
+    <path d="M1188 718 H1245" fill="none" stroke="#4874CB" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="1265" y="625" width="271" height="193" rx="20" fill="#17345C"/>
+    <text x="1400" y="670" font-size="25" fill="#FFFFFF" text-anchor="middle">本轮优化目标</text>
+    <text x="1400" y="721" font-size="30" font-weight="600" fill="#FFFFFF" text-anchor="middle">缩短瓶颈</text>
+    <text x="1400" y="764" font-size="30" font-weight="600" fill="#FFFFFF" text-anchor="middle">完成时间</text>
+    <text x="64" y="866" font-size="22" fill="#61728A">注：预算趋势、奖励份额均为机制示意，不代表真实实验数据；CPU 调节作用于计算环节。</text>
+  </g>
+</svg>

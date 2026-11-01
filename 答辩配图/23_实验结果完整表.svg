@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1350" viewBox="0 0 2400 1350"><style>text{font-family:PingFang SC,Microsoft YaHei,Arial,sans-serif;fill:#17345C;font-variant-numeric:tabular-nums}</style>
+<rect x="0" y="0" width="2400" height="1350" fill="white" />
+<rect x="72" y="66" width="9" height="65" fill="#4874CB" rx="4"/>
+<text x="108" y="117" font-size="52" font-weight="600">实验结果表：全部目标精度设置</text>
+<text x="108" y="181" font-size="31" fill="#4874CB">GBSFL 与四种基线方法对比 · 单位：秒（s） · 越小越好</text>
+<rect x="100" y="225" width="2200" height="86" fill="#17345C" rx="10"/>
+<text x="270" y="278" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">数据集</text>
+<text x="540" y="278" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">目标精度</text>
+<text x="752.5" y="278" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">GBSFL</text>
+<text x="977.5" y="278" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">EURO-AFL</text>
+<text x="1202.5" y="278" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">Random</text>
+<text x="1427.5" y="278" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">FedAvg</text>
+<text x="1652.5" y="278" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">Fair</text>
+<text x="1877.5" y="278" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">最优基线</text>
+<text x="2145" y="278" font-size="31" text-anchor="middle" style="fill:white" font-weight="600">耗时降低</text>
+<rect x="100" y="311" width="2200" height="51" fill="#FFFFFF" />
+<rect x="640" y="311" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="347.5" font-size="29"  >MNIST</text>
+<text x="540" y="347.5" font-size="29" text-anchor="middle" >96%</text>
+<text x="840" y="347.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">50.53</text>
+<text x="1065" y="347.5" font-size="29" text-anchor="end" >98.63</text>
+<text x="1290" y="347.5" font-size="29" text-anchor="end" >201.41</text>
+<text x="1515" y="347.5" font-size="29" text-anchor="end" >131.93</text>
+<text x="1740" y="347.5" font-size="29" text-anchor="end" >111.78</text>
+<text x="1877.5" y="347.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="347.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">48.8%</text>
+<line x1="100" y1="362" x2="2300" y2="362" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="362" width="2200" height="51" fill="#FFFFFF" />
+<rect x="640" y="362" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="398.5" font-size="29"  >MNIST</text>
+<text x="540" y="398.5" font-size="29" text-anchor="middle" >97%</text>
+<text x="840" y="398.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">70.49</text>
+<text x="1065" y="398.5" font-size="29" text-anchor="end" >135.98</text>
+<text x="1290" y="398.5" font-size="29" text-anchor="end" >246.81</text>
+<text x="1515" y="398.5" font-size="29" text-anchor="end" >170.88</text>
+<text x="1740" y="398.5" font-size="29" text-anchor="end" >144.80</text>
+<text x="1877.5" y="398.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="398.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">48.2%</text>
+<line x1="100" y1="413" x2="2300" y2="413" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="413" width="2200" height="51" fill="#FFFFFF" />
+<rect x="640" y="413" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="449.5" font-size="29"  >MNIST</text>
+<text x="540" y="449.5" font-size="29" text-anchor="middle" >98%</text>
+<text x="840" y="449.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">114.68</text>
+<text x="1065" y="449.5" font-size="29" text-anchor="end" >189.40</text>
+<text x="1290" y="449.5" font-size="29" text-anchor="end" >437.33</text>
+<text x="1515" y="449.5" font-size="29" text-anchor="end" >257.40</text>
+<text x="1740" y="449.5" font-size="29" text-anchor="end" >219.07</text>
+<text x="1877.5" y="449.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="449.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">39.5%</text>
+<line x1="100" y1="464" x2="2300" y2="464" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="464" width="2200" height="51" fill="#FFFFFF" />
+<rect x="640" y="464" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="500.5" font-size="29"  >MNIST</text>
+<text x="540" y="500.5" font-size="29" text-anchor="middle" >99%</text>
+<text x="840" y="500.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">355.68</text>
+<text x="1065" y="500.5" font-size="29" text-anchor="end" >509.25</text>
+<text x="1290" y="500.5" font-size="29" text-anchor="end" >1045.35</text>
+<text x="1515" y="500.5" font-size="29" text-anchor="end" >677.22</text>
+<text x="1740" y="500.5" font-size="29" text-anchor="end" >574.29</text>
+<text x="1877.5" y="500.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="500.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">30.2%</text>
+<line x1="100" y1="515" x2="2300" y2="515" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="100" y1="515" x2="2300" y2="515" stroke="#AFC0DB" stroke-width="3"/>
+<rect x="100" y="515" width="2200" height="51" fill="#F5F7FB" />
+<rect x="640" y="515" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="551.5" font-size="29"  >Fashion-MNIST</text>
+<text x="540" y="551.5" font-size="29" text-anchor="middle" >80%</text>
+<text x="840" y="551.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">51.46</text>
+<text x="1065" y="551.5" font-size="29" text-anchor="end" >99.56</text>
+<text x="1290" y="551.5" font-size="29" text-anchor="end" >254.99</text>
+<text x="1515" y="551.5" font-size="29" text-anchor="end" >131.82</text>
+<text x="1740" y="551.5" font-size="29" text-anchor="end" >110.51</text>
+<text x="1877.5" y="551.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="551.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">48.3%</text>
+<line x1="100" y1="566" x2="2300" y2="566" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="566" width="2200" height="51" fill="#F5F7FB" />
+<rect x="640" y="566" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="602.5" font-size="29"  >Fashion-MNIST</text>
+<text x="540" y="602.5" font-size="29" text-anchor="middle" >85%</text>
+<text x="840" y="602.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">93.13</text>
+<text x="1065" y="602.5" font-size="29" text-anchor="end" >169.91</text>
+<text x="1290" y="602.5" font-size="29" text-anchor="end" >433.06</text>
+<text x="1515" y="602.5" font-size="29" text-anchor="end" >221.21</text>
+<text x="1740" y="602.5" font-size="29" text-anchor="end" >185.78</text>
+<text x="1877.5" y="602.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="602.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">45.2%</text>
+<line x1="100" y1="617" x2="2300" y2="617" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="617" width="2200" height="51" fill="#F5F7FB" />
+<rect x="640" y="617" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="653.5" font-size="29"  >Fashion-MNIST</text>
+<text x="540" y="653.5" font-size="29" text-anchor="middle" >88%</text>
+<text x="840" y="653.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">240.04</text>
+<text x="1065" y="653.5" font-size="29" text-anchor="end" >382.84</text>
+<text x="1290" y="653.5" font-size="29" text-anchor="end" >831.76</text>
+<text x="1515" y="653.5" font-size="29" text-anchor="end" >520.75</text>
+<text x="1740" y="653.5" font-size="29" text-anchor="end" >432.21</text>
+<text x="1877.5" y="653.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="653.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">37.3%</text>
+<line x1="100" y1="668" x2="2300" y2="668" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="668" width="2200" height="51" fill="#F5F7FB" />
+<rect x="640" y="668" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="704.5" font-size="29"  >Fashion-MNIST</text>
+<text x="540" y="704.5" font-size="29" text-anchor="middle" >90%</text>
+<text x="840" y="704.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">466.57</text>
+<text x="1065" y="704.5" font-size="29" text-anchor="end" >667.64</text>
+<text x="1290" y="704.5" font-size="29" text-anchor="end" >1272.49</text>
+<text x="1515" y="704.5" font-size="29" text-anchor="end" >892.04</text>
+<text x="1740" y="704.5" font-size="29" text-anchor="end" >751.79</text>
+<text x="1877.5" y="704.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="704.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">30.1%</text>
+<line x1="100" y1="719" x2="2300" y2="719" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="100" y1="719" x2="2300" y2="719" stroke="#AFC0DB" stroke-width="3"/>
+<rect x="100" y="719" width="2200" height="51" fill="#FFFFFF" />
+<rect x="640" y="719" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="755.5" font-size="29"  >CIFAR-10</text>
+<text x="540" y="755.5" font-size="29" text-anchor="middle" >80%</text>
+<text x="840" y="755.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">365.60</text>
+<text x="1065" y="755.5" font-size="29" text-anchor="end" >572.08</text>
+<text x="1290" y="755.5" font-size="29" text-anchor="end" >1372.55</text>
+<text x="1515" y="755.5" font-size="29" text-anchor="end" >938.79</text>
+<text x="1740" y="755.5" font-size="29" text-anchor="end" >780.29</text>
+<text x="1877.5" y="755.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="755.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">36.1%</text>
+<line x1="100" y1="770" x2="2300" y2="770" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="770" width="2200" height="51" fill="#FFFFFF" />
+<rect x="640" y="770" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="806.5" font-size="29"  >CIFAR-10</text>
+<text x="540" y="806.5" font-size="29" text-anchor="middle" >85%</text>
+<text x="840" y="806.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">477.92</text>
+<text x="1065" y="806.5" font-size="29" text-anchor="end" >716.88</text>
+<text x="1290" y="806.5" font-size="29" text-anchor="end" >1723.38</text>
+<text x="1515" y="806.5" font-size="29" text-anchor="end" >1207.34</text>
+<text x="1740" y="806.5" font-size="29" text-anchor="end" >1000.71</text>
+<text x="1877.5" y="806.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="806.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">33.3%</text>
+<line x1="100" y1="821" x2="2300" y2="821" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="821" width="2200" height="51" fill="#FFFFFF" />
+<rect x="640" y="821" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="857.5" font-size="29"  >CIFAR-10</text>
+<text x="540" y="857.5" font-size="29" text-anchor="middle" >90%</text>
+<text x="840" y="857.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">778.60</text>
+<text x="1065" y="857.5" font-size="29" text-anchor="end" >1251.08</text>
+<text x="1290" y="857.5" font-size="29" text-anchor="end" >2413.05</text>
+<text x="1515" y="857.5" font-size="29" text-anchor="end" >1865.83</text>
+<text x="1740" y="857.5" font-size="29" text-anchor="end" >1548.77</text>
+<text x="1877.5" y="857.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="857.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">37.8%</text>
+<line x1="100" y1="872" x2="2300" y2="872" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="872" width="2200" height="51" fill="#FFFFFF" />
+<rect x="640" y="872" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="908.5" font-size="29"  >CIFAR-10</text>
+<text x="540" y="908.5" font-size="29" text-anchor="middle" >95%</text>
+<text x="840" y="908.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">1139.59</text>
+<text x="1065" y="908.5" font-size="29" text-anchor="end" >1799.17</text>
+<text x="1290" y="908.5" font-size="29" text-anchor="end" >3977.25</text>
+<text x="1515" y="908.5" font-size="29" text-anchor="end" >2583.10</text>
+<text x="1740" y="908.5" font-size="29" text-anchor="end" >2157.08</text>
+<text x="1877.5" y="908.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="908.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">36.7%</text>
+<line x1="100" y1="923" x2="2300" y2="923" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="100" y1="923" x2="2300" y2="923" stroke="#AFC0DB" stroke-width="3"/>
+<rect x="100" y="923" width="2200" height="51" fill="#F5F7FB" />
+<rect x="640" y="923" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="959.5" font-size="29"  >CIFAR-100</text>
+<text x="540" y="959.5" font-size="29" text-anchor="middle" >60%</text>
+<text x="840" y="959.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">1175.50</text>
+<text x="1065" y="959.5" font-size="29" text-anchor="end" >2145.61</text>
+<text x="1290" y="959.5" font-size="29" text-anchor="end" >5150.15</text>
+<text x="1515" y="959.5" font-size="29" text-anchor="end" >3195.61</text>
+<text x="1740" y="959.5" font-size="29" text-anchor="end" >2502.55</text>
+<text x="1877.5" y="959.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="959.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">45.2%</text>
+<line x1="100" y1="974" x2="2300" y2="974" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="974" width="2200" height="51" fill="#F5F7FB" />
+<rect x="640" y="974" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="1010.5" font-size="29"  >CIFAR-100</text>
+<text x="540" y="1010.5" font-size="29" text-anchor="middle" >70%</text>
+<text x="840" y="1010.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">1459.74</text>
+<text x="1065" y="1010.5" font-size="29" text-anchor="end" >2620.14</text>
+<text x="1290" y="1010.5" font-size="29" text-anchor="end" >5952.80</text>
+<text x="1515" y="1010.5" font-size="29" text-anchor="end" >3891.77</text>
+<text x="1740" y="1010.5" font-size="29" text-anchor="end" >3072.93</text>
+<text x="1877.5" y="1010.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="1010.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">44.3%</text>
+<line x1="100" y1="1025" x2="2300" y2="1025" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="1025" width="2200" height="51" fill="#F5F7FB" />
+<rect x="640" y="1025" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="1061.5" font-size="29"  >CIFAR-100</text>
+<text x="540" y="1061.5" font-size="29" text-anchor="middle" >80%</text>
+<text x="840" y="1061.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">1922.52</text>
+<text x="1065" y="1061.5" font-size="29" text-anchor="end" >3396.36</text>
+<text x="1290" y="1061.5" font-size="29" text-anchor="end" >7285.34</text>
+<text x="1515" y="1061.5" font-size="29" text-anchor="end" >5009.32</text>
+<text x="1740" y="1061.5" font-size="29" text-anchor="end" >3975.19</text>
+<text x="1877.5" y="1061.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="1061.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">43.4%</text>
+<line x1="100" y1="1076" x2="2300" y2="1076" stroke="#DCE4F0" stroke-width="2"/>
+<rect x="100" y="1076" width="2200" height="51" fill="#F5F7FB" />
+<rect x="640" y="1076" width="225" height="51" fill="#EAF1FF" />
+<text x="124" y="1112.5" font-size="29"  >CIFAR-100</text>
+<text x="540" y="1112.5" font-size="29" text-anchor="middle" >90%</text>
+<text x="840" y="1112.5" font-size="29" text-anchor="end" font-weight="700" style="fill:#315FBB">2501.05</text>
+<text x="1065" y="1112.5" font-size="29" text-anchor="end" >4412.21</text>
+<text x="1290" y="1112.5" font-size="29" text-anchor="end" >8640.69</text>
+<text x="1515" y="1112.5" font-size="29" text-anchor="end" >6280.40</text>
+<text x="1740" y="1112.5" font-size="29" text-anchor="end" >5019.27</text>
+<text x="1877.5" y="1112.5" font-size="29" text-anchor="middle" >EURO-AFL</text>
+<text x="2145" y="1112.5" font-size="29" text-anchor="middle" font-weight="600" style="fill:#159B91">43.3%</text>
+<line x1="100" y1="1127" x2="2300" y2="1127" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="100" y1="1127" x2="2300" y2="1127" stroke="#AFC0DB" stroke-width="3"/>
+<line x1="440" y1="311" x2="440" y2="1127" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="640" y1="311" x2="640" y2="1127" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="865" y1="311" x2="865" y2="1127" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="1090" y1="311" x2="1090" y2="1127" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="1315" y1="311" x2="1315" y2="1127" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="1540" y1="311" x2="1540" y2="1127" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="1765" y1="311" x2="1765" y2="1127" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="1990" y1="311" x2="1990" y2="1127" stroke="#DCE4F0" stroke-width="2"/>
+<line x1="100" y1="1127" x2="2300" y2="1127" stroke="#17345C" stroke-width="3"/>
+<text x="100" y="1180" font-size="27" >注：各方法共用既有准确率轨迹；耗时累计至首次达到目标精度的轮次（包含该轮）。</text>
+<text x="100" y="1224" font-size="27" >耗时降低 =（最优基线耗时 − GBSFL 耗时）/ 最优基线耗时；FedAvg 为均匀预算基线。</text>
+<text x="100" y="1268" font-size="25" style="fill:#64758E">数据来源：现有整体对比实验的逐轮记录；单次模拟结果，非实际程序运行耗时。</text>
+</svg>
