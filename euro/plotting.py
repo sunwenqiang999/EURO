@@ -34,6 +34,7 @@ METHOD_STYLE = {
 # 绘图顺序（保证图例稳定）。
 INTRA_ORDER = ["ours", "euro_afl", "random", "average", "fair"]
 INTER_ORDER = ["ours", "euro_afl", "random", "average"]
+JOINT_ORDER = ["ours", "euro_afl", "random", "average", "fair"]
 
 
 def first_reach_index(accuracy: Sequence[float], target: float) -> Optional[int]:
@@ -59,11 +60,20 @@ def plot_acc_vs_time(accuracy: Sequence[float],
                      order: Sequence[str],
                      threshold: float,
                      out_dir: str, name: str,
-                     title: str = "") -> None:
-    """精度随累计时间变化折线图（按阈值截断）。"""
+                     title: str = "",
+                     full_curve: bool = False) -> None:
+    """精度随累计时间变化折线图。
+
+    Args:
+        full_curve: True 时画完整 50 轮（横轴为全程累计时间，与旧图量级一致）；
+                    False 时按 threshold 首次达标轮次截断。
+    """
     acc = np.asarray(accuracy, dtype=np.float64)
-    idx = first_reach_index(acc, threshold)
-    end = len(acc) - 1 if idx is None else idx  # 未达标则画完整曲线
+    if full_curve:
+        end = len(acc) - 1
+    else:
+        idx = first_reach_index(acc, threshold)
+        end = len(acc) - 1 if idx is None else idx  # 未达标则画完整曲线
 
     fig, ax = plt.subplots(figsize=(10, 6))
     for m in order:

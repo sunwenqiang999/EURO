@@ -24,9 +24,11 @@ import numpy as np
 
 from euro import plotting
 from euro.config import (DATASETS, FIGURES_DIR, RESULTS_DIR, SimConfig,
-                         ensure_dirs, load_accuracy, set_global_seed)
+                         apply_dataset_params, ensure_dirs, load_accuracy,
+                         set_global_seed)
 from euro.simulator import (run_budget_sensitivity, run_inter_experiment,
-                            run_intra_experiment, run_psi_sensitivity)
+                            run_intra_experiment, run_joint_experiment,
+                            run_psi_sensitivity)
 
 
 def _save_times(out_dir: str, times: dict) -> None:
@@ -35,23 +37,32 @@ def _save_times(out_dir: str, times: dict) -> None:
         np.save(os.path.join(out_dir, f"{method}_time_list.npy"), np.asarray(series))
 
 
-def run_dataset(ds_key: str, sim: SimConfig, run_intra: bool, run_inter: bool) -> None:
+def run_dataset(ds_key: str, sim: SimConfig, run_intra: bool, run_inter: bool,
+                run_joint: bool = False, full_curve: bool = False) -> None:
     cfg = DATASETS[ds_key]
     accuracy = load_accuracy(ds_key)
     # 目标精度取该数据集最高目标。
     target = float(cfg.target_accuracies[-1])
-    print(f"\n=== 数据集 {cfg.display} | target_acc={target} | threshold={cfg.acc_threshold} ===")
+
+    def ds_sim() -> SimConfig:
+        # 拷贝配置并按数据集注入客户端参数范围（mnist/fmnist 小、cifar 大）。
+        return apply_dataset_params(SimConfig(**sim.__dict__), ds_key)
+
+    pr = cfg.param_range
+    print(f"\n=== 数据集 {cfg.display} | target_acc={target} | threshold={cfg.acc_threshold} "
+          f"| params d/c/a={pr['d']} T_up={pr['tup']} ===")
 
     if run_intra:
         # 每个实验用独立 Generator，保证各方法共享同轮客户端且可复现。
         rng = np.random.default_rng(sim.seed)
-        times = run_intra_experiment(accuracy, SimConfig(**sim.__dict__), target, rng)
+        times = run_intra_experiment(accuracy, ds_sim(), target, rng)
         _save_times(os.path.join(RESULTS_DIR, cfg.display, "intra"), times)
         intra_fig = os.path.join(FIGURES_DIR, "intra")
         plotting.plot_acc_vs_time(accuracy, times, plotting.INTRA_ORDER,
                                   cfg.acc_threshold, intra_fig,
                                   f"{cfg.display}_accVstime",
-                                  title=f"Intra-round methods ({cfg.display})")
+                                  title=f"Intra-round methods ({cfg.display})",
+                                  full_curve=full_curve)
         plotting.plot_reach_time_bar(accuracy, times, plotting.INTRA_ORDER,
                                      cfg.target_accuracies, intra_fig,
                                      f"{cfg.display}_reachtime",
@@ -60,18 +71,35 @@ def run_dataset(ds_key: str, sim: SimConfig, run_intra: bool, run_inter: bool) -
 
     if run_inter:
         rng = np.random.default_rng(sim.seed + 1)
-        times = run_inter_experiment(accuracy, SimConfig(**sim.__dict__), target, rng)
+        times = run_inter_experiment(accuracy, ds_sim(), target, rng)
         _save_times(os.path.join(RESULTS_DIR, cfg.display, "inter"), times)
         inter_fig = os.path.join(FIGURES_DIR, "inter")
         plotting.plot_acc_vs_time(accuracy, times, plotting.INTER_ORDER,
                                   cfg.acc_threshold, inter_fig,
                                   f"{cfg.display}_accVstime",
-                                  title=f"Inter-round methods ({cfg.display})")
+                                  title=f"Inter-round methods ({cfg.display})",
+                                  full_curve=full_curve)
         plotting.plot_reach_time_bar(accuracy, times, plotting.INTER_ORDER,
                                      cfg.target_accuracies, inter_fig,
                                      f"{cfg.display}_reachtime",
                                      title=f"Inter-round methods ({cfg.display})")
         print(f"  [inter] 轮间对比图已生成 -> {inter_fig}")
+
+    if run_joint:
+        rng = np.random.default_rng(sim.seed + 4)
+        times = run_joint_experiment(accuracy, ds_sim(), target, rng)
+        _save_times(os.path.join(RESULTS_DIR, cfg.display, "joint"), times)
+        joint_fig = os.path.join(FIGURES_DIR, "joint")
+        plotting.plot_acc_vs_time(accuracy, times, plotting.JOINT_ORDER,
+                                  cfg.acc_threshold, joint_fig,
+                                  f"{cfg.display}_accVstime",
+                                  title=f"Overall comparison ({cfg.display})",
+                                  full_curve=full_curve)
+        plotting.plot_reach_time_bar(accuracy, times, plotting.JOINT_ORDER,
+                                     cfg.target_accuracies, joint_fig,
+                                     f"{cfg.display}_reachtime",
+                                     title=f"Overall comparison ({cfg.display})")
+        print(f"  [joint] 轮间+轮内联合对比图已生成 -> {joint_fig}")
 
 
 def run_sensitivity(ds_key: str, sim: SimConfig) -> None:
@@ -82,14 +110,16 @@ def run_sensitivity(ds_key: str, sim: SimConfig) -> None:
 
     rng = np.random.default_rng(sim.seed + 2)
     budgets = [5000.0, 10000.0, 20000.0, 30000.0]
-    bud_series = run_budget_sensitivity(accuracy, SimConfig(**sim.__dict__), target, budgets, rng)
+    bud_series = run_budget_sensitivity(
+        accuracy, apply_dataset_params(SimConfig(**sim.__dict__), ds_key), target, budgets, rng)
     plotting.plot_sensitivity(accuracy, bud_series, "B={:.0f}", cfg.acc_threshold,
                               sens_fig, f"{cfg.display}_budget",
                               title=f"Budget sensitivity ({cfg.display})")
 
     rng = np.random.default_rng(sim.seed + 3)
     psis = [1.0, 10.0, 100.0, 500.0, 1000.0]
-    psi_series = run_psi_sensitivity(accuracy, SimConfig(**sim.__dict__), target, psis, rng)
+    psi_series = run_psi_sensitivity(
+        accuracy, apply_dataset_params(SimConfig(**sim.__dict__), ds_key), target, psis, rng)
     plotting.plot_sensitivity(accuracy, psi_series, r"$\psi$={:.0f}", cfg.acc_threshold,
                               sens_fig, f"{cfg.display}_psi",
                               title=f"$\\psi$ sensitivity ({cfg.display})")
@@ -100,21 +130,26 @@ def main():
     parser = argparse.ArgumentParser(description="EURO 两阶段联邦学习预算分配实验")
     parser.add_argument("--datasets", nargs="+", default=list(DATASETS.keys()),
                         choices=list(DATASETS.keys()))
-    parser.add_argument("--only", choices=["intra", "inter", "both"], default="both")
+    parser.add_argument("--only", choices=["intra", "inter", "joint", "both", "all"],
+                        default="all",
+                        help="intra/inter/joint 单独运行；both=轮内+轮间；all=三者全部")
     parser.add_argument("--sensitivity", action="store_true")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--budget", type=float, default=10000.0)
+    parser.add_argument("--full-curve", action="store_true",
+                        help="折线图画完整 50 轮（横轴为全程累计时间），而非按阈值截断")
     args = parser.parse_args()
 
     ensure_dirs(RESULTS_DIR, FIGURES_DIR)
     set_global_seed(args.seed)
 
     sim = SimConfig(seed=args.seed, total_budget=args.budget)
-    run_intra = args.only in ("intra", "both")
-    run_inter = args.only in ("inter", "both")
+    run_intra = args.only in ("intra", "both", "all")
+    run_inter = args.only in ("inter", "both", "all")
+    run_joint = args.only in ("joint", "all")
 
     for ds in args.datasets:
-        run_dataset(ds, sim, run_intra, run_inter)
+        run_dataset(ds, sim, run_intra, run_inter, run_joint, full_curve=args.full_curve)
         if args.sensitivity:
             run_sensitivity(ds, sim)
 

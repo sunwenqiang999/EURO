@@ -83,5 +83,6 @@ python run_experiments.py --sensitivity
 7. 固定随机种子，保证可复现；同一轮所有方法共享同组客户端参数。
 8. 轮内强化学习改为可微策略网络，稳定优于随机/均匀基线。
 
-旧脚本（`train*.py`、`eyy.py`、`eu.py`、`inter_*`、`generate_picture/` 等）予以保留
-作为历史参考，新流程完全由 `euro/` 包 + `run_experiments.py` 驱动。
+旧脚本（`train*.py`、`eyy.py`、`eu.py`、`inter_*`、`generate_picture/` 等）及其产物
+（`*.pth`、`simulation_results_*.json`、`figures/`、`time/`、`model/`）已全部删除，
+当前流程完全由 `euro/` 包 + `run_experiments.py` 驱动。

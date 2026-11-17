@@ -46,6 +46,19 @@ class DatasetConfig:
     acc_file: str            # timelist 下的 .npy 文件名
     target_accuracies: tuple # 到达时间柱状图使用的四个目标精度
     acc_threshold: float     # accVstime 折线图的截断阈值
+    # 客户端异构参数采样区间 (d, c, a, T_up) 的 (low, high)。
+    # mnist/fmnist 使用较小范围；cifar10/cifar100 使用较大范围，
+    # 使各数据集累计时延量级与原实验图对齐。
+    param_range: dict = None
+
+
+# 两套客户端异构参数范围。
+_SMALL_PARAMS = {  # mnist / fmnist
+    "d": (1.0, 2.5), "c": (1.0, 2.5), "a": (1.0, 2.5), "tup": (3.0, 8.0),
+}
+_LARGE_PARAMS = {  # cifar10 / cifar100
+    "d": (1.0, 3.5), "c": (1.0, 3.5), "a": (1.0, 3.5), "tup": (5.0, 15.0),
+}
 
 
 DATASETS: dict[str, DatasetConfig] = {
@@ -55,6 +68,7 @@ DATASETS: dict[str, DatasetConfig] = {
         acc_file="minstcnn_trainacc.npy",
         target_accuracies=(96, 97, 98, 99),
         acc_threshold=99.0,
+        param_range=_SMALL_PARAMS,
     ),
     "fmnist": DatasetConfig(
         key="fmnist",
@@ -62,6 +76,7 @@ DATASETS: dict[str, DatasetConfig] = {
         acc_file="Fminstcnn_trainacc.npy",
         target_accuracies=(80, 85, 88, 90),
         acc_threshold=91.5,
+        param_range=_SMALL_PARAMS,
     ),
     "cifar10": DatasetConfig(
         key="cifar10",
@@ -69,6 +84,7 @@ DATASETS: dict[str, DatasetConfig] = {
         acc_file="cifar10_trainacc.npy",
         target_accuracies=(80, 85, 90, 95),
         acc_threshold=97.0,
+        param_range=_LARGE_PARAMS,
     ),
     "cifar100": DatasetConfig(
         key="cifar100",
@@ -76,6 +92,7 @@ DATASETS: dict[str, DatasetConfig] = {
         acc_file="cifar100_trainacc.npy",
         target_accuracies=(60, 70, 80, 90),
         acc_threshold=95.0,
+        param_range=_LARGE_PARAMS,
     ),
 }
 
@@ -107,6 +124,8 @@ class SimConfig:
 
     # 客户端异构参数采样区间（均匀分布）。
     # d_i: 数据量相关；c_i: 单样本计算周期；a_i: 能耗系数；T_up: 上行通信时间。
+    # 默认使用较小范围（mnist/fmnist）；运行时可用 apply_dataset_params()
+    # 按数据集覆盖（cifar 使用较大范围，使累计时延量级对齐原实验图）。
     d_low: float = 1.0
     d_high: float = 2.5
     c_low: float = 1.0
@@ -115,6 +134,19 @@ class SimConfig:
     a_high: float = 2.5
     tup_low: float = 3.0
     tup_high: float = 8.0
+
+
+def apply_dataset_params(sim: "SimConfig", ds_key: str) -> "SimConfig":
+    """按数据集把客户端参数范围写入 SimConfig（就地修改并返回）。
+
+    mnist / fmnist 使用较小范围，cifar10 / cifar100 使用较大范围。
+    """
+    pr = DATASETS[ds_key].param_range or _SMALL_PARAMS
+    sim.d_low, sim.d_high = pr["d"]
+    sim.c_low, sim.c_high = pr["c"]
+    sim.a_low, sim.a_high = pr["a"]
+    sim.tup_low, sim.tup_high = pr["tup"]
+    return sim
 
 
 def set_global_seed(seed: int) -> None:

@@ -4,9 +4,11 @@
     - 同一轮内，所有对比方法共享同一组客户端异构参数，保证横向比较公平。
     - 通过显式的 numpy Generator 控制随机性，保证可复现。
 
-提供两类实验：
-    run_intra_experiment : 固定轮间策略（IRBAI），对比 5 种轮内方法。
-    run_inter_experiment : 固定轮内策略（IRBSB 解析），对比 4-5 种轮间方法。
+提供的实验：
+    run_intra_experiment : 固定轮间策略（IRBAI），对比 5 种轮内方法（轮内消融）。
+    run_inter_experiment : 固定轮内策略（IRBSB 解析），对比 4 种轮间方法（轮间消融）。
+    run_joint_experiment : 五种方法各用完整两层组合的整体对比。
+    run_budget_sensitivity / run_psi_sensitivity : 预算 B / 参数 ψ 敏感性。
 """
 
 from __future__ import annotations
@@ -140,6 +142,87 @@ def run_inter_experiment(accuracy: np.ndarray, sim: SimConfig,
 
         times["random"].append(t_rand)
         times["average"].append(t_avg)
+        times["euro_afl"].append(t_rl)
+        times["ours"].append(t_ours)
+
+    return times
+
+
+# --------------------------------------------------------------------------- #
+# 轮间 + 轮内联合对比实验（每种方法用自己完整的两层组合）
+# --------------------------------------------------------------------------- #
+def run_joint_experiment(accuracy: np.ndarray, sim: SimConfig,
+                         target_accuracy: float,
+                         rng: np.random.Generator) -> Dict[str, List[float]]:
+    """五种方法各用自己完整的「轮间 + 轮内」组合，比较逐轮时延。
+
+    对应中期答辩 PPT「对比算法」整体对比：
+        ours (GBSFL) : 轮间 IRBAI + 轮内 IRBSB（解析）
+        euro_afl     : 轮间 InterBMA(DQN) + 轮内 IntraBMA(策略网)
+        random       : 轮间随机 + 轮内随机
+        average(FedAvg): 轮间均匀 + 轮内均匀
+        fair         : 轮间均匀 + 轮内 Fair（Fair 仅定义轮内，轮间取均匀）
+
+    Returns:
+        {method: [逐轮时延]}，method ∈ {random, average, fair, euro_afl, ours}
+    """
+    sim.irbai_Q = target_accuracy
+    # 各方法的轮间预算序列。
+    budgets_ours = alg.inter_ours(accuracy, sim.total_budget, sim.num_rounds,
+                                  sim.irbai_psi, target_accuracy)
+    budgets_avg = alg.inter_average(sim.total_budget, sim.num_rounds)
+    budgets_rand = alg.inter_random(sim.total_budget, sim.num_rounds, rng)
+
+    # 轮内 RL 智能体（EURO-AFL 第二阶段）先预训练。
+    intra_agent = IntraBMAAgent(sim.num_clients)
+    _warmup_intra_agent(intra_agent, budgets_ours, sim, rng, epochs=30)
+    intra_agent.epsilon = 0.0
+    # 轮间 RL 智能体（EURO-AFL 第一阶段）。
+    inter_agent = InterBMAAgent(num_clients=sim.num_clients)
+    remaining = sim.total_budget
+
+    times = {k: [] for k in ("random", "average", "fair", "euro_afl", "ours")}
+
+    for r in range(sim.num_rounds):
+        cp = sample_clients(sim, rng)        # 本轮共享客户端参数
+        acc = float(accuracy[r])
+
+        # ours: IRBAI + IRBSB
+        t_ours, _, _ = alg.intra_ours(float(budgets_ours[r]), cp.d_i, cp.c_i,
+                                      cp.a_i, cp.sigma, cp.T_up)
+        # random: 随机轮间 + 随机轮内
+        t_rand, _, _ = alg.intra_random(float(budgets_rand[r]), cp.d_i, cp.c_i,
+                                        cp.a_i, cp.sigma, cp.T_up, rng)
+        # average(FedAvg): 均匀轮间 + 均匀轮内
+        t_avg, _, _ = alg.intra_average(float(budgets_avg[r]), cp.d_i, cp.c_i,
+                                        cp.a_i, cp.sigma, cp.T_up)
+        # fair: 均匀轮间 + 轮内 Fair
+        t_fair, _, _ = alg.intra_fair(float(budgets_avg[r]), cp.d_i, cp.c_i,
+                                      cp.a_i, cp.sigma, cp.T_up)
+
+        # euro_afl: 轮间 DQN 决定预算 -> 轮内策略网分配
+        state = inter_agent.build_state(r, remaining, sim.num_rounds, sim.total_budget)
+        action = inter_agent.select_action(state)
+        rl_budget = inter_agent.action_to_budget(action, remaining, r,
+                                                 sim.num_rounds, acc, target_accuracy)
+        intra_state = intra_agent.build_state(rl_budget, cp)
+        _, rl_payments = intra_agent.act(intra_state, rl_budget)
+        rl_tlist = alg.completion_times(rl_payments, cp.d_i, cp.c_i, cp.a_i, cp.sigma, cp.T_up)
+        t_rl = float(np.max(rl_tlist))
+
+        prev_acc = inter_agent.history["accuracies"][-1] if inter_agent.history["accuracies"] else 0.0
+        reward = inter_agent.calculate_reward(acc, prev_acc, t_rl)
+        remaining -= float(np.sum(rl_payments))
+        inter_agent.update_history(rl_payments, rl_tlist, acc)
+        next_state = inter_agent.build_state(r + 1, remaining, sim.num_rounds, sim.total_budget)
+        done = (r >= sim.num_rounds - 1) or (remaining <= 0)
+        inter_agent.remember(state, action, reward, next_state, done)
+        for _ in range(4):
+            inter_agent.replay()
+
+        times["random"].append(t_rand)
+        times["average"].append(t_avg)
+        times["fair"].append(t_fair)
         times["euro_afl"].append(t_rl)
         times["ours"].append(t_ours)
 
