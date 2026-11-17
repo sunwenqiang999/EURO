@@ -61,12 +61,13 @@ def run_dataset(ds_key: str, sim: SimConfig, run_intra: bool, run_inter: bool,
         plotting.plot_acc_vs_time(accuracy, times, plotting.INTRA_ORDER,
                                   cfg.acc_threshold, intra_fig,
                                   f"{cfg.display}_accVstime",
-                                  title=f"Intra-round methods ({cfg.display})",
-                                  full_curve=full_curve)
+                                  full_curve=full_curve,
+                                  labels=plotting.INTRA_LABEL,
+                                  legend_loc="lower right")
         plotting.plot_reach_time_bar(accuracy, times, plotting.INTRA_ORDER,
                                      cfg.target_accuracies, intra_fig,
                                      f"{cfg.display}_reachtime",
-                                     title=f"Intra-round methods ({cfg.display})")
+                                     labels=plotting.INTRA_LABEL)
         print(f"  [intra] 轮内对比图已生成 -> {intra_fig}")
 
     if run_inter:
@@ -77,12 +78,13 @@ def run_dataset(ds_key: str, sim: SimConfig, run_intra: bool, run_inter: bool,
         plotting.plot_acc_vs_time(accuracy, times, plotting.INTER_ORDER,
                                   cfg.acc_threshold, inter_fig,
                                   f"{cfg.display}_accVstime",
-                                  title=f"Inter-round methods ({cfg.display})",
-                                  full_curve=full_curve)
+                                  full_curve=full_curve,
+                                  labels=plotting.INTER_LABEL,
+                                  legend_loc="upper left")
         plotting.plot_reach_time_bar(accuracy, times, plotting.INTER_ORDER,
                                      cfg.target_accuracies, inter_fig,
                                      f"{cfg.display}_reachtime",
-                                     title=f"Inter-round methods ({cfg.display})")
+                                     labels=plotting.INTER_LABEL)
         print(f"  [inter] 轮间对比图已生成 -> {inter_fig}")
 
     if run_joint:
@@ -93,12 +95,13 @@ def run_dataset(ds_key: str, sim: SimConfig, run_intra: bool, run_inter: bool,
         plotting.plot_acc_vs_time(accuracy, times, plotting.JOINT_ORDER,
                                   cfg.acc_threshold, joint_fig,
                                   f"{cfg.display}_accVstime",
-                                  title=f"Overall comparison ({cfg.display})",
-                                  full_curve=full_curve)
+                                  full_curve=full_curve,
+                                  labels=plotting.JOINT_LABEL,
+                                  legend_loc="lower right")
         plotting.plot_reach_time_bar(accuracy, times, plotting.JOINT_ORDER,
                                      cfg.target_accuracies, joint_fig,
                                      f"{cfg.display}_reachtime",
-                                     title=f"Overall comparison ({cfg.display})")
+                                     labels=plotting.JOINT_LABEL)
         print(f"  [joint] 轮间+轮内联合对比图已生成 -> {joint_fig}")
 
 
@@ -112,17 +115,17 @@ def run_sensitivity(ds_key: str, sim: SimConfig) -> None:
     budgets = [5000.0, 10000.0, 20000.0, 30000.0]
     bud_series = run_budget_sensitivity(
         accuracy, apply_dataset_params(SimConfig(**sim.__dict__), ds_key), target, budgets, rng)
+    # 与原实验图一致：图例以千为单位标注（B=5 / B=10 / B=20 / B=30）。
+    bud_series = {b / 1000.0: s for b, s in bud_series.items()}
     plotting.plot_sensitivity(accuracy, bud_series, "B={:.0f}", cfg.acc_threshold,
-                              sens_fig, f"{cfg.display}_budget",
-                              title=f"Budget sensitivity ({cfg.display})")
+                              sens_fig, f"{cfg.display}_budget")
 
     rng = np.random.default_rng(sim.seed + 3)
     psis = [1.0, 10.0, 100.0, 500.0, 1000.0]
     psi_series = run_psi_sensitivity(
         accuracy, apply_dataset_params(SimConfig(**sim.__dict__), ds_key), target, psis, rng)
     plotting.plot_sensitivity(accuracy, psi_series, r"$\psi$={:.0f}", cfg.acc_threshold,
-                              sens_fig, f"{cfg.display}_psi",
-                              title=f"$\\psi$ sensitivity ({cfg.display})")
+                              sens_fig, f"{cfg.display}_psi")
     print(f"  [sensitivity] 敏感性图已生成 -> {sens_fig}")
 
 

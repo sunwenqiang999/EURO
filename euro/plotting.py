@@ -22,19 +22,48 @@ import numpy as np
 plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
 
-# 方法 -> (图例标签, 颜色)
-METHOD_STYLE = {
-    "ours": ("GBSFL (Ours)", "b"),
-    "euro_afl": ("EURO-AFL", "orange"),
-    "random": ("Random", "g"),
-    "average": ("FedAvg", "r"),
-    "fair": ("Fair", "purple"),
+# 方法 -> 颜色（与原实验图一致：蓝/橙/绿/红/紫）。
+METHOD_COLOR = {
+    "ours": "b",
+    "euro_afl": "orange",
+    "random": "g",
+    "average": "r",
+    "fair": "purple",
+}
+
+# 图例文案按实验类型区分，与原实验图保持一致：
+#   joint —— 整体方法名；intra —— 固定轮间(IRBAI)、变轮内；inter —— 固定轮内(IRBSB)、变轮间。
+JOINT_LABEL = {
+    "ours": "GBSFL",
+    "euro_afl": "EURO-AFL",
+    "random": "Random",
+    "average": "FedAvg",
+    "fair": "Fair",
+}
+INTRA_LABEL = {
+    "ours": "IRBAI+IRBSB",
+    "euro_afl": "IRBAI+IntraBMA",
+    "random": "IRBAI+Random",
+    "average": "IRBAI+FedAvg",
+    "fair": "IRBAI+Fair",
+}
+INTER_LABEL = {
+    "ours": "IRBAI+IRBSB",
+    "euro_afl": "InterBMA+IRBSB",
+    "random": "Random+IRBSB",
+    "average": "FedAvg+IRBSB",
 }
 
 # 绘图顺序（保证图例稳定）。
 INTRA_ORDER = ["ours", "euro_afl", "random", "average", "fair"]
 INTER_ORDER = ["ours", "euro_afl", "random", "average"]
 JOINT_ORDER = ["ours", "euro_afl", "random", "average", "fair"]
+
+# 原实验图的通用样式常量。
+LINE_FIGSIZE = (10, 6)   # 折线图
+BAR_FIGSIZE = (6.4, 4.8) # 柱状图（matplotlib 默认比例）
+BAR_WIDTH = 0.15
+SAVE_DPI = 300
 
 
 def first_reach_index(accuracy: Sequence[float], target: float) -> Optional[int]:
@@ -50,8 +79,9 @@ def _cumulative_time(times: Sequence[float], upto_index: int) -> float:
 
 def _save(fig, out_dir: str, name: str) -> None:
     os.makedirs(out_dir, exist_ok=True)
-    fig.savefig(os.path.join(out_dir, f"{name}.png"), dpi=150, bbox_inches="tight")
-    fig.savefig(os.path.join(out_dir, f"{name}.eps"), bbox_inches="tight")
+    fig.savefig(os.path.join(out_dir, f"{name}.png"), dpi=SAVE_DPI, bbox_inches="tight")
+    fig.savefig(os.path.join(out_dir, f"{name}.eps"), format="eps", dpi=SAVE_DPI,
+                bbox_inches="tight")
     plt.close(fig)
 
 
@@ -61,34 +91,39 @@ def plot_acc_vs_time(accuracy: Sequence[float],
                      threshold: float,
                      out_dir: str, name: str,
                      title: str = "",
-                     full_curve: bool = False) -> None:
+                     full_curve: bool = False,
+                     labels: Optional[Dict[str, str]] = None,
+                     legend_loc: str = "best") -> None:
     """精度随累计时间变化折线图。
 
     Args:
         full_curve: True 时画完整 50 轮（横轴为全程累计时间，与旧图量级一致）；
                     False 时按 threshold 首次达标轮次截断。
+        labels: 方法 -> 图例文案，默认用 JOINT_LABEL。
+        legend_loc: 图例位置，与原实验图一致默认自动选择。
     """
     acc = np.asarray(accuracy, dtype=np.float64)
+    label_map = labels or JOINT_LABEL
     if full_curve:
         end = len(acc) - 1
     else:
         idx = first_reach_index(acc, threshold)
         end = len(acc) - 1 if idx is None else idx  # 未达标则画完整曲线
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=LINE_FIGSIZE)
     for m in order:
         if m not in method_times:
             continue
-        label, color = METHOD_STYLE[m]
         cum = np.cumsum(np.asarray(method_times[m], dtype=np.float64))
-        ax.plot(cum[: end + 1], acc[: end + 1], label=label, color=color, marker="o", markersize=3)
+        ax.plot(cum[: end + 1], acc[: end + 1],
+                label=label_map.get(m, m), color=METHOD_COLOR[m])
 
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Accuracy (%)")
     if title:
         ax.set_title(title)
     ax.grid(True)
-    ax.legend(loc="lower right")
+    ax.legend(loc=legend_loc)
     fig.tight_layout()
     _save(fig, out_dir, name)
 
@@ -98,31 +133,33 @@ def plot_reach_time_bar(accuracy: Sequence[float],
                         order: Sequence[str],
                         target_accuracies: Sequence[float],
                         out_dir: str, name: str,
-                        title: str = "") -> None:
+                        title: str = "",
+                        labels: Optional[Dict[str, str]] = None) -> None:
     """到达各目标精度所需累计时间的分组柱状图。
 
     从未达到某目标精度的方法，该柱子记为 0（并在图例/日志中可识别）。
     """
     acc = np.asarray(accuracy, dtype=np.float64)
+    label_map = labels or JOINT_LABEL
     methods = [m for m in order if m in method_times]
     n_targets = len(target_accuracies)
-    bar_width = 0.8 / max(len(methods), 1)
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=BAR_FIGSIZE)
     x = np.arange(n_targets)
     for i, m in enumerate(methods):
-        label, color = METHOD_STYLE[m]
         heights = []
         for target in target_accuracies:
             idx = first_reach_index(acc, target)
             heights.append(0.0 if idx is None else _cumulative_time(method_times[m], idx))
-        ax.bar(x + i * bar_width, heights, bar_width, label=label, color=color)
+        ax.bar(x + i * BAR_WIDTH, heights, BAR_WIDTH,
+               label=label_map.get(m, m), color=METHOD_COLOR[m])
 
     ax.set_xlabel("Accuracy (%)")
     ax.set_ylabel("Time (s)")
     if title:
         ax.set_title(title)
-    ax.set_xticks(x + bar_width * (len(methods) - 1) / 2)
+    # 与原实验图一致：刻度落在第 3 个柱子（索引 2）的位置。
+    ax.set_xticks(x + BAR_WIDTH * 2)
     ax.set_xticklabels([str(t) for t in target_accuracies])
     ax.legend()
     fig.tight_layout()
@@ -141,11 +178,11 @@ def plot_sensitivity(accuracy: Sequence[float],
     end = len(acc) - 1 if idx is None else idx
 
     colors = ["orange", "g", "r", "purple", "b", "brown"]
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=LINE_FIGSIZE)
     for i, (key, times) in enumerate(series.items()):
         cum = np.cumsum(np.asarray(times, dtype=np.float64))
         ax.plot(cum[: end + 1], acc[: end + 1],
-                label=label_fmt.format(key), color=colors[i % len(colors)], marker="o", markersize=3)
+                label=label_fmt.format(key), color=colors[i % len(colors)])
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Accuracy (%)")
     if title:
