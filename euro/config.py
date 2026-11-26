@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
 import random
 from dataclasses import dataclass, field
@@ -47,17 +48,21 @@ class DatasetConfig:
     target_accuracies: tuple # 到达时间柱状图使用的四个目标精度
     acc_threshold: float     # accVstime 折线图的截断阈值
     # 客户端异构参数采样区间 (d, c, a, T_up) 的 (low, high)。
-    # mnist/fmnist 使用较小范围；cifar10/cifar100 使用较大范围，
-    # 使各数据集累计时延量级与原实验图对齐。
+    # mnist/fmnist 用小档、cifar10 用大档、cifar100 用超大档，三套取值取自原代码
+    # inter_round_dqn/FederatedLearningSimulator.py，使累计时延量级与原实验图对齐。
     param_range: dict = None
 
 
-# 两套客户端异构参数范围。
-_SMALL_PARAMS = {  # mnist / fmnist
+# 三套客户端异构参数范围，取自原代码 inter_round_dqn/FederatedLearningSimulator.py
+# 中 ``self.client_params`` 的三组设定（一组启用、两组注释备用）。
+_SMALL_PARAMS = {  # mnist / fmnist：rand*1.5+1, T_up rand*5+3
     "d": (1.0, 2.5), "c": (1.0, 2.5), "a": (1.0, 2.5), "tup": (3.0, 8.0),
 }
-_LARGE_PARAMS = {  # cifar10 / cifar100
+_LARGE_PARAMS = {  # cifar10：rand*2.5+1, T_up rand*10+5
     "d": (1.0, 3.5), "c": (1.0, 3.5), "a": (1.0, 3.5), "tup": (5.0, 15.0),
+}
+_XLARGE_PARAMS = {  # cifar100：rand*3+1.25, T_up rand*10+5
+    "d": (1.25, 4.25), "c": (1.25, 4.25), "a": (1.25, 4.25), "tup": (5.0, 15.0),
 }
 
 
@@ -91,8 +96,8 @@ DATASETS: dict[str, DatasetConfig] = {
         display="cifar100",
         acc_file="cifar100_trainacc.npy",
         target_accuracies=(60, 70, 80, 90),
-        acc_threshold=95.0,
-        param_range=_LARGE_PARAMS,
+        acc_threshold=99.5,
+        param_range=_XLARGE_PARAMS,
     ),
 }
 
@@ -150,7 +155,20 @@ def apply_dataset_params(sim: "SimConfig", ds_key: str) -> "SimConfig":
 
 
 def set_global_seed(seed: int) -> None:
-    """统一设置 random / numpy / torch 随机种子，保证可复现。"""
+    """统一设置 random / numpy / torch 随机种子，保证可复现。
+
+    除设置三大随机源外，还会：
+        - 固定 ``PYTHONHASHSEED``（影响 set/dict 遍历顺序等隐式随机性）；
+        - 关闭 cuDNN 自动算法搜索并开启确定性算法，避免 GPU 卷积选算法带来的
+          逐次浮点差异；
+        - 为 CUDA / MPS 后端分别设置种子。
+
+    注意：本函数只能保证「全局随机源」确定。模块内所有真正参与实验的随机调用
+    都应使用显式传入的 ``np.random.Generator`` / ``random.Random`` 实例
+    （见 ``sample_clients`` 与 ``euro.agents``），以免不同实验之间共享并消耗
+    同一份全局状态，导致「单跑某个实验」与「批量跑」结果不一致。
+    """
+    os.environ["PYTHONHASHSEED"] = str(seed)
     random.seed(seed)
     np.random.seed(seed)
     try:
@@ -159,8 +177,42 @@ def set_global_seed(seed: int) -> None:
         torch.manual_seed(seed)
         if torch.cuda.is_available():
             torch.cuda.manual_seed_all(seed)
+        mps = getattr(torch, "mps", None)
+        if mps is not None and hasattr(mps, "manual_seed"):
+            try:
+                mps.manual_seed(seed)
+            except Exception:  # pragma: no cover - 部分 torch 版本无 MPS 运行时
+                pass
+        cudnn = getattr(getattr(torch, "backends", None), "cudnn", None)
+        if cudnn is not None:
+            cudnn.deterministic = True
+            cudnn.benchmark = False
+        if hasattr(torch, "use_deterministic_algorithms"):
+            try:
+                torch.use_deterministic_algorithms(True, warn_only=True)
+            except TypeError:  # 老版本不支持 warn_only
+                pass
+            except Exception:  # pragma: no cover - 某些后端不支持
+                pass
     except ImportError:
         pass
+
+
+def derive_seed(base_seed: int, *tags) -> int:
+    """由基础种子与若干标签稳定派生出一个子种子。
+
+    用于给「数据集 / 实验 / 智能体」等不同随机流分配互不干扰且可复现的种子。
+    使用 blake2b 而非内置 ``hash()``，因为后者对 str 加了进程级随机化盐值，
+    跨进程不稳定（即使设置 PYTHONHASHSEED 也需在解释器启动前生效）。
+
+    Examples:
+        >>> derive_seed(42, "mnist", "intra") == derive_seed(42, "mnist", "intra")
+        True
+    """
+    payload = "|".join([str(base_seed), *(str(t) for t in tags)]).encode("utf-8")
+    digest = hashlib.blake2b(payload, digest_size=8).digest()
+    # 限制在 numpy / torch 均可接受的 32 位无符号范围内。
+    return int.from_bytes(digest, "big") % (2 ** 31 - 1)
 
 
 @dataclass
@@ -177,13 +229,16 @@ class ClientParams:
         return len(self.d_i)
 
 
-def sample_clients(sim: SimConfig, rng: np.random.Generator | None = None) -> ClientParams:
+def sample_clients(sim: SimConfig, rng: np.random.Generator) -> ClientParams:
     """为一轮采样 K 个异构客户端参数。
 
-    使用传入的 ``rng`` (numpy Generator) 保证可控随机性；若为 None 则使用全局
-    numpy 随机状态。
+    ``rng`` 为**必填**的 numpy Generator：实验中的每条随机流都必须显式传入，
+    禁止回退到全局 ``np.random``，否则不同实验/数据集会共享并相互消耗同一份
+    全局状态，破坏可复现性。
     """
-    draw = rng.uniform if rng is not None else np.random.uniform
+    if rng is None:
+        raise ValueError("sample_clients 需要显式传入 np.random.Generator 以保证可复现")
+    draw = rng.uniform
     k = sim.num_clients
     return ClientParams(
         sigma=sim.sigma,

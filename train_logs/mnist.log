@@ -1,0 +1,64 @@
+device = mps
+结果目录 = /Users/sunwenqiang/PycharmProjects/EURO/fl_training/results/mnist_lenet5_r50
+dataset = mnist, model = lenet5, clients = 20, rounds = 50, local_epochs = 3
+每个客户端样本数: 3000 (共 60000 条训练样本)
+model = lenet5, params = 0.04M
+timelist 输出 = /Users/sunwenqiang/PycharmProjects/EURO/timelist_new/mnist_trainacc.npy / /Users/sunwenqiang/PycharmProjects/EURO/timelist_new/mnist_testacc.npy
+Round   1/50  train_acc = 0.9446  test_acc = 0.9487  [已用 0.2min, 预计剩余 11.1min]
+Round   2/50  train_acc = 0.9725  test_acc = 0.9758  [已用 0.4min, 预计剩余 10.7min]
+Round   3/50  train_acc = 0.9789  test_acc = 0.9810  [已用 0.7min, 预计剩余 10.4min]
+Round   4/50  train_acc = 0.9824  test_acc = 0.9834  [已用 0.9min, 预计剩余 10.2min]
+Round   5/50  train_acc = 0.9853  test_acc = 0.9846  [已用 1.1min, 预计剩余 10.2min]
+Round   6/50  train_acc = 0.9871  test_acc = 0.9866  [已用 1.4min, 预计剩余 10.0min]
+Round   7/50  train_acc = 0.9881  test_acc = 0.9874  [已用 1.6min, 预计剩余 9.8min]
+Round   8/50  train_acc = 0.9890  test_acc = 0.9880  [已用 1.8min, 预计剩余 9.5min]
+Round   9/50  train_acc = 0.9900  test_acc = 0.9881  [已用 2.0min, 预计剩余 9.3min]
+Round  10/50  train_acc = 0.9906  test_acc = 0.9887  [已用 2.3min, 预计剩余 9.1min]
+Round  11/50  train_acc = 0.9913  test_acc = 0.9886  [已用 2.5min, 预计剩余 8.9min]
+Round  12/50  train_acc = 0.9919  test_acc = 0.9897  [已用 2.7min, 预计剩余 8.7min]
+Round  13/50  train_acc = 0.9921  test_acc = 0.9902  [已用 3.0min, 预计剩余 8.4min]
+Round  14/50  train_acc = 0.9927  test_acc = 0.9905  [已用 3.2min, 预计剩余 8.2min]
+Round  15/50  train_acc = 0.9931  test_acc = 0.9907  [已用 3.4min, 预计剩余 8.0min]
+Round  16/50  train_acc = 0.9931  test_acc = 0.9910  [已用 3.6min, 预计剩余 7.7min]
+Round  17/50  train_acc = 0.9937  test_acc = 0.9912  [已用 3.9min, 预计剩余 7.5min]
+Round  18/50  train_acc = 0.9939  test_acc = 0.9915  [已用 4.1min, 预计剩余 7.3min]
+Round  19/50  train_acc = 0.9946  test_acc = 0.9912  [已用 4.3min, 预计剩余 7.1min]
+Round  20/50  train_acc = 0.9947  test_acc = 0.9917  [已用 4.5min, 预计剩余 6.8min]
+Round  21/50  train_acc = 0.9949  test_acc = 0.9914  [已用 4.8min, 预计剩余 6.6min]
+Round  22/50  train_acc = 0.9950  test_acc = 0.9911  [已用 5.0min, 预计剩余 6.3min]
+Round  23/50  train_acc = 0.9953  test_acc = 0.9914  [已用 5.2min, 预计剩余 6.1min]
+Round  24/50  train_acc = 0.9955  test_acc = 0.9919  [已用 5.4min, 预计剩余 5.9min]
+Round  25/50  train_acc = 0.9956  test_acc = 0.9921  [已用 5.7min, 预计剩余 5.7min]
+Round  26/50  train_acc = 0.9958  test_acc = 0.9917  [已用 5.9min, 预计剩余 5.4min]
+Round  27/50  train_acc = 0.9960  test_acc = 0.9920  [已用 6.1min, 预计剩余 5.2min]
+Round  28/50  train_acc = 0.9963  test_acc = 0.9923  [已用 6.3min, 预计剩余 5.0min]
+Round  29/50  train_acc = 0.9963  test_acc = 0.9918  [已用 6.6min, 预计剩余 4.7min]
+Round  30/50  train_acc = 0.9966  test_acc = 0.9922  [已用 6.8min, 预计剩余 4.5min]
+Round  31/50  train_acc = 0.9967  test_acc = 0.9923  [已用 7.0min, 预计剩余 4.3min]
+Round  32/50  train_acc = 0.9969  test_acc = 0.9918  [已用 7.2min, 预计剩余 4.1min]
+Round  33/50  train_acc = 0.9970  test_acc = 0.9922  [已用 7.5min, 预计剩余 3.9min]
+Round  34/50  train_acc = 0.9970  test_acc = 0.9921  [已用 7.7min, 预计剩余 3.6min]
+Round  35/50  train_acc = 0.9971  test_acc = 0.9928  [已用 7.9min, 预计剩余 3.4min]
+Round  36/50  train_acc = 0.9973  test_acc = 0.9927  [已用 8.2min, 预计剩余 3.2min]
+Round  37/50  train_acc = 0.9974  test_acc = 0.9925  [已用 8.4min, 预计剩余 3.0min]
+Round  38/50  train_acc = 0.9976  test_acc = 0.9922  [已用 8.7min, 预计剩余 2.7min]
+Round  39/50  train_acc = 0.9978  test_acc = 0.9921  [已用 8.9min, 预计剩余 2.5min]
+Round  40/50  train_acc = 0.9978  test_acc = 0.9924  [已用 9.1min, 预计剩余 2.3min]
+Round  41/50  train_acc = 0.9979  test_acc = 0.9925  [已用 9.4min, 预计剩余 2.1min]
+Round  42/50  train_acc = 0.9979  test_acc = 0.9925  [已用 9.6min, 预计剩余 1.8min]
+Round  43/50  train_acc = 0.9980  test_acc = 0.9925  [已用 9.9min, 预计剩余 1.6min]
+Round  44/50  train_acc = 0.9980  test_acc = 0.9924  [已用 10.1min, 预计剩余 1.4min]
+Round  45/50  train_acc = 0.9982  test_acc = 0.9922  [已用 10.4min, 预计剩余 1.2min]
+Round  46/50  train_acc = 0.9983  test_acc = 0.9925  [已用 10.6min, 预计剩余 0.9min]
+Round  47/50  train_acc = 0.9983  test_acc = 0.9926  [已用 10.8min, 预计剩余 0.7min]
+Round  48/50  train_acc = 0.9983  test_acc = 0.9928  [已用 11.1min, 预计剩余 0.5min]
+Round  49/50  train_acc = 0.9983  test_acc = 0.9925  [已用 11.3min, 预计剩余 0.2min]
+Round  50/50  train_acc = 0.9985  test_acc = 0.9927  [已用 11.5min, 预计剩余 0.0min]
+训练完成，总耗时 11.5 分钟
+训练集准确率已保存: /Users/sunwenqiang/PycharmProjects/EURO/fl_training/results/mnist_lenet5_r50/trainacc.npy
+测试集准确率已保存: /Users/sunwenqiang/PycharmProjects/EURO/fl_training/results/mnist_lenet5_r50/testacc.npy
+timelist 曲线已保存: /Users/sunwenqiang/PycharmProjects/EURO/timelist_new/mnist_trainacc.npy
+timelist 曲线已保存: /Users/sunwenqiang/PycharmProjects/EURO/timelist_new/mnist_testacc.npy
+模型已保存: /Users/sunwenqiang/PycharmProjects/EURO/fl_training/results/mnist_lenet5_r50/fedavg_model.pth
+模型已另存: /Users/sunwenqiang/PycharmProjects/EURO/models_new/mnist_lenet5.pth
+模型元信息已保存: /Users/sunwenqiang/PycharmProjects/EURO/models_new/mnist_lenet5_meta.json

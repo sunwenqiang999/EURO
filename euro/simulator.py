@@ -3,6 +3,9 @@
 核心原则（修复原代码参数错位 bug）：
     - 同一轮内，所有对比方法共享同一组客户端异构参数，保证横向比较公平。
     - 通过显式的 numpy Generator 控制随机性，保证可复现。
+    - 智能体（IntraBMA / InterBMA）各自持有由 ``sim.seed`` 稳定派生的独立随机
+      种子，网络初始化、ε-探索、经验回放均不触碰全局 RNG。因此单跑一个实验
+      与批量跑多个实验/多个数据集，结果完全一致。
 
 提供的实验：
     run_intra_experiment : 固定轮间策略（IRBAI），对比 5 种轮内方法（轮内消融）。
@@ -19,19 +22,19 @@ import numpy as np
 
 from . import algorithms as alg
 from .agents import IntraBMAAgent, InterBMAAgent
-from .config import SimConfig, sample_clients
+from .config import SimConfig, derive_seed, sample_clients
 
 
 # --------------------------------------------------------------------------- #
 # 轮内对比实验
 # --------------------------------------------------------------------------- #
 def _warmup_intra_agent(agent: IntraBMAAgent, round_budgets, sim: SimConfig,
-                        rng: np.random.Generator, epochs: int = 30) -> None:
+                        warm_seed: int, epochs: int = 30) -> None:
     """对轮内 DQN 做若干 epoch 预训练，使其策略优于随机/均匀基线。
 
-    使用独立的随机流，避免污染评估阶段的客户端采样序列。
+    使用由 ``warm_seed`` 确定的独立随机流，避免污染评估阶段的客户端采样序列。
     """
-    warm_rng = np.random.default_rng(sim.seed + 100)
+    warm_rng = np.random.default_rng(warm_seed)
     for _ in range(epochs):
         for r in range(sim.num_rounds):
             budget = float(round_budgets[r])
@@ -54,9 +57,11 @@ def run_intra_experiment(accuracy: np.ndarray, sim: SimConfig,
     round_budgets = alg.inter_ours(accuracy, sim.total_budget, sim.num_rounds,
                                    sim.irbai_psi, target_accuracy)
 
-    agent = IntraBMAAgent(sim.num_clients)
+    agent = IntraBMAAgent(sim.num_clients,
+                          seed=derive_seed(sim.seed, "intra", "intra_agent"))
     # 预训练：让轮内策略网络在多个 epoch 上学习，收敛到优于朴素基线。
-    _warmup_intra_agent(agent, round_budgets, sim, rng, epochs=30)
+    _warmup_intra_agent(agent, round_budgets, sim,
+                        derive_seed(sim.seed, "intra", "warmup"), epochs=30)
     agent.epsilon = 0.0  # 评估阶段使用已学习的确定性策略
     times = {k: [] for k in ("random", "average", "fair", "euro_afl", "ours")}
 
@@ -106,7 +111,8 @@ def run_inter_experiment(accuracy: np.ndarray, sim: SimConfig,
     budgets_avg = alg.inter_average(sim.total_budget, sim.num_rounds)
     budgets_rand = alg.inter_random(sim.total_budget, sim.num_rounds, rng)
 
-    inter_agent = InterBMAAgent(num_clients=sim.num_clients)
+    inter_agent = InterBMAAgent(num_clients=sim.num_clients,
+                                seed=derive_seed(sim.seed, "inter", "inter_agent"))
     remaining = sim.total_budget
 
     times = {k: [] for k in ("random", "average", "euro_afl", "ours")}
@@ -174,11 +180,14 @@ def run_joint_experiment(accuracy: np.ndarray, sim: SimConfig,
     budgets_rand = alg.inter_random(sim.total_budget, sim.num_rounds, rng)
 
     # 轮内 RL 智能体（EURO-AFL 第二阶段）先预训练。
-    intra_agent = IntraBMAAgent(sim.num_clients)
-    _warmup_intra_agent(intra_agent, budgets_ours, sim, rng, epochs=30)
+    intra_agent = IntraBMAAgent(sim.num_clients,
+                                seed=derive_seed(sim.seed, "joint", "intra_agent"))
+    _warmup_intra_agent(intra_agent, budgets_ours, sim,
+                        derive_seed(sim.seed, "joint", "warmup"), epochs=30)
     intra_agent.epsilon = 0.0
     # 轮间 RL 智能体（EURO-AFL 第一阶段）。
-    inter_agent = InterBMAAgent(num_clients=sim.num_clients)
+    inter_agent = InterBMAAgent(num_clients=sim.num_clients,
+                                seed=derive_seed(sim.seed, "joint", "inter_agent"))
     remaining = sim.total_budget
 
     times = {k: [] for k in ("random", "average", "fair", "euro_afl", "ours")}
@@ -235,16 +244,23 @@ def run_joint_experiment(accuracy: np.ndarray, sim: SimConfig,
 def run_budget_sensitivity(accuracy: np.ndarray, sim: SimConfig,
                            target_accuracy: float, budgets: List[float],
                            rng: np.random.Generator) -> Dict[float, List[float]]:
-    """不同总预算 B 下本文方法（IRBAI + IRBSB）的逐轮时延。"""
+    """不同总预算 B 下本文方法（IRBAI + IRBSB）的逐轮时延。
+
+    每个 B 都从同一个客户端采样序列出发（而非顺序共享一条流），因此：
+        - 不同 B 之间的差异完全来自预算本身，对比更公平；
+        - 结果不再依赖 ``budgets`` 列表的顺序与长度，可复现性更强。
+    """
+    base = int(rng.integers(0, 2 ** 31 - 1))
     result = {}
     for B in budgets:
         sub = SimConfig(**{**sim.__dict__})
         sub.total_budget = B
         sub.irbai_Q = target_accuracy
+        sub_rng = np.random.default_rng(base)
         round_budgets = alg.inter_ours(accuracy, B, sub.num_rounds, sub.irbai_psi, target_accuracy)
         times = []
         for r in range(sub.num_rounds):
-            cp = sample_clients(sub, rng)
+            cp = sample_clients(sub, sub_rng)
             t, _, _ = alg.intra_ours(float(round_budgets[r]), cp.d_i, cp.c_i,
                                      cp.a_i, cp.sigma, cp.T_up)
             times.append(t)
@@ -255,14 +271,19 @@ def run_budget_sensitivity(accuracy: np.ndarray, sim: SimConfig,
 def run_psi_sensitivity(accuracy: np.ndarray, sim: SimConfig,
                         target_accuracy: float, psis: List[float],
                         rng: np.random.Generator) -> Dict[float, List[float]]:
-    """不同 ψ 下本文方法的逐轮时延（IRBAI 参数敏感性）。"""
+    """不同 ψ 下本文方法的逐轮时延（IRBAI 参数敏感性）。
+
+    与预算敏感性同理：每个 ψ 共享同一客户端采样序列，差异只来自 ψ 本身。
+    """
+    base = int(rng.integers(0, 2 ** 31 - 1))
     result = {}
     for psi in psis:
+        sub_rng = np.random.default_rng(base)
         round_budgets = alg.inter_ours(accuracy, sim.total_budget, sim.num_rounds,
                                        psi, target_accuracy)
         times = []
         for r in range(sim.num_rounds):
-            cp = sample_clients(sim, rng)
+            cp = sample_clients(sim, sub_rng)
             t, _, _ = alg.intra_ours(float(round_budgets[r]), cp.d_i, cp.c_i,
                                      cp.a_i, cp.sigma, cp.T_up)
             times.append(t)

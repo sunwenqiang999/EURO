@@ -1,4 +1,4 @@
-"""FedAvg 基线可选模型：SimpleCNN 与 LeNet-5。"""
+"""FedAvg 基线可选模型：SimpleCNN、LeNet-5 与 ResNet-18。"""
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -52,6 +52,39 @@ class LeNet5(nn.Module):
         return self.fc3(x)
 
 
+def build_resnet18(in_channels: int = 3, num_classes: int = 10,
+                   input_size: int = 32) -> nn.Module:
+    """CIFAR 版 ResNet-18（约 11.2M 参数）。
+
+    torchvision 原版 ResNet-18 是为 224x224 的 ImageNet 设计的：首层是
+    7x7/stride2 卷积，其后还接 3x3/stride2 的 MaxPool。若直接喂 32x32 的 CIFAR
+    图像，经这两步就降到 8x8，再过 layer2/3/4 只剩 1x1，空间信息几乎丢光，
+    精度通常比正常实现低 10 个百分点以上。
+
+    因此采用学术界通行的「CIFAR 版 ResNet-18」改法（He et al. 原文针对 CIFAR
+    的处理方式，亦为后续绝大多数论文的标准做法）：
+        - 首层换成 3x3 / stride=1 / padding=1 卷积；
+        - 去掉首层后的 MaxPool（替换为 Identity）。
+    这样特征图尺寸为 32 -> 32 -> 16 -> 8 -> 4，与原论文在 CIFAR 上的设定一致。
+
+    Args:
+        in_channels: 输入通道数（灰度图为 1，RGB 为 3）。
+        num_classes: 分类类别数。
+        input_size: 输入边长；大于等于 64 时保留 ImageNet 原始首层结构。
+    """
+    from torchvision.models import resnet18
+
+    model = resnet18(weights=None, num_classes=num_classes)
+    if input_size < 64:
+        model.conv1 = nn.Conv2d(in_channels, 64, kernel_size=3, stride=1,
+                                padding=1, bias=False)
+        model.maxpool = nn.Identity()
+    elif in_channels != 3:
+        model.conv1 = nn.Conv2d(in_channels, 64, kernel_size=7, stride=2,
+                                padding=3, bias=False)
+    return model
+
+
 def build_model(dataset: str, model_name: str = "simplecnn") -> nn.Module:
     """按数据集和模型名称构建分类模型。"""
     if dataset in ("mnist", "fmnist"):
@@ -67,4 +100,6 @@ def build_model(dataset: str, model_name: str = "simplecnn") -> nn.Module:
         return SimpleCNN(in_channels, num_classes, input_size)
     if model_name == "lenet5":
         return LeNet5(in_channels, num_classes, input_size)
+    if model_name == "resnet18":
+        return build_resnet18(in_channels, num_classes, input_size)
     raise ValueError(f"未知模型: {model_name}")

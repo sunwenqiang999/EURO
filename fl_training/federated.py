@@ -5,16 +5,33 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
 
+from config import seed_worker
+
 
 class Client:
-    """联邦客户端：持有本地数据子集，执行本地训练。"""
+    """联邦客户端：持有本地数据子集，执行本地训练。
 
-    def __init__(self, client_id, dataset, indices, batch_size, device):
+    Args:
+        seed: 该客户端 DataLoader 的 shuffle 种子。给定后绑定独立的
+              ``torch.Generator``，不再依赖 torch 全局 RNG——否则每轮每个
+              客户端的 batch 顺序会随「之前消耗了多少随机数」而变化，
+              导致训练结果不可复现。
+    """
+
+    def __init__(self, client_id, dataset, indices, batch_size, device,
+                 seed=None, num_workers=0):
         self.client_id = client_id
         self.device = device
         self.num_samples = len(indices)
+        generator = None
+        if seed is not None:
+            generator = torch.Generator()
+            # 不同客户端用不同但确定的种子，避免所有客户端共用同一打乱顺序。
+            generator.manual_seed(int(seed) + int(client_id))
         self.loader = DataLoader(
-            Subset(dataset, indices), batch_size=batch_size, shuffle=True
+            Subset(dataset, indices), batch_size=batch_size, shuffle=True,
+            generator=generator, num_workers=num_workers,
+            worker_init_fn=seed_worker if num_workers > 0 else None,
         )
 
     def local_train(self, global_model, local_epochs, lr, momentum):
@@ -41,13 +58,25 @@ class FedAvgServer:
         self.global_model = model.to(device)
 
     def aggregate(self, client_weights, client_sizes):
-        """FedAvg: w <- sum_k (n_k / n) * w_k"""
+        """FedAvg: w <- sum_k (n_k / n) * w_k
+
+        对 BatchNorm 的整型缓冲区（``num_batches_tracked``，dtype=int64）做特殊
+        处理：加权平均会把它变成浮点数，再经 ``load_state_dict`` 写回 int64 时
+        被截断（如 234.999 -> 234），造成计数持续偏小。这里改为直接取各客户端
+        的最大值，语义上等价于「全局模型已见过的 batch 数」，且保持整型。
+        ResNet-18 等含 BN 的模型会命中该分支；SimpleCNN / LeNet-5 无 BN，不受影响。
+        """
         total = sum(client_sizes)
         averaged = {}
         for key in client_weights[0]:
-            averaged[key] = sum(
-                w[key] * (n / total) for w, n in zip(client_weights, client_sizes)
-            )
+            ref = client_weights[0][key]
+            if not ref.dtype.is_floating_point:
+                # 整型缓冲区（num_batches_tracked 等）不做加权平均。
+                averaged[key] = torch.stack([w[key] for w in client_weights]).max(dim=0).values
+            else:
+                averaged[key] = sum(
+                    w[key] * (n / total) for w, n in zip(client_weights, client_sizes)
+                )
         self.global_model.load_state_dict(averaged)
         return self.global_model
 

@@ -69,8 +69,10 @@ python run_experiments.py --sensitivity
 - `figures_new/intra/<dataset>_accVstime.{png,eps}` — 轮内方法精度-时间曲线
 - `figures_new/intra/<dataset>_reachtime.{png,eps}` — 轮内到达目标精度时间柱状
 - `figures_new/inter/<dataset>_*` — 轮间方法对比
-- `figures_new/sensitivity/<dataset>_budget.*` — 总预算 B 敏感性
-- `figures_new/sensitivity/<dataset>_psi.*` — 参数 ψ 敏感性
+- `figures_new/sensitivity/<dataset>_budget.*` — 总预算 B 敏感性（折线图）
+- `figures_new/sensitivity/<dataset>_psi.*` — 参数 ψ 敏感性（柱状图，横轴目标精度）
+- `results_new/<dataset>/{joint,inter,intra}/*_time_list.npy` — 各方法逐轮时延
+- `results_new/<dataset>/sensitivity/{B*,psi*}_time_list.npy` — 敏感性实验逐轮时延
 
 ## 相比旧代码的主要修复
 

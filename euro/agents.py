@@ -8,18 +8,65 @@
     - 学习率从 1.0（对 Adam 极不稳定）降为 1e-3。
     - 轮内状态纳入客户端异构特征，使智能体能针对客户端条件差异化决策。
     - 奖励量纲统一；折扣因子、目标网络更新频率合理化。
+    - **可复现性**：智能体内部不再使用全局 ``random`` / ``np.random`` / torch
+      全局 RNG。构造时传入 ``seed`` 后，经验回放采样、ε-探索、网络权重初始化
+      全部走各自独立的随机流，因此「单独跑某个实验」与「批量跑多个实验」
+      得到的结果完全一致。
 """
 
 from __future__ import annotations
 
 import random
 from collections import deque
+from contextlib import contextmanager
 
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+
+
+# --------------------------------------------------------------------------- #
+# 随机性工具：保证智能体拥有彼此独立且可复现的随机流
+# --------------------------------------------------------------------------- #
+@contextmanager
+def torch_seed(seed: int | None):
+    """临时将 torch 全局 RNG 置为 ``seed``，退出时恢复原状态。
+
+    用于确定性地初始化网络权重（``nn.Linear`` 的默认初始化只能走 torch 全局
+    RNG，无法直接注入 Generator），同时不污染调用方的全局随机状态——
+    这正是原实现中「多创建一个智能体就会改变后续所有随机数」的根因。
+    """
+    if seed is None:
+        yield
+        return
+    cpu_state = torch.random.get_rng_state()
+    cuda_states = torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None
+    try:
+        torch.manual_seed(int(seed))
+        yield
+    finally:
+        torch.random.set_rng_state(cpu_state)
+        if cuda_states is not None:
+            torch.cuda.set_rng_state_all(cuda_states)
+
+
+def _make_py_rng(seed: int | None):
+    """返回 ``random.Random`` 实例；seed 为 None 时退化为全局 random 模块。"""
+    return random.Random(seed) if seed is not None else random
+
+
+def _make_np_rng(seed: int | None):
+    """返回 ``np.random.Generator``；seed 为 None 时退化为全局 np.random。"""
+    return np.random.default_rng(seed) if seed is not None else np.random
+
+
+def _randint(rng, high: int) -> int:
+    """兼容 Generator(``integers``) 与 legacy ``np.random``(``randint``)。"""
+    if hasattr(rng, "integers"):
+        return int(rng.integers(0, high))
+    return int(rng.randint(0, high))
 
 
 class _MLP(nn.Module):
@@ -40,16 +87,23 @@ class _MLP(nn.Module):
 
 
 class ReplayBuffer:
-    """经验回放缓冲区。"""
+    """经验回放缓冲区。
 
-    def __init__(self, capacity: int = 10000):
+    Args:
+        capacity: 缓冲区容量。
+        seed: 采样随机种子。给定后使用独立的 ``random.Random``，
+              不再消耗全局 ``random`` 状态。
+    """
+
+    def __init__(self, capacity: int = 10000, seed: int | None = None):
         self.buffer: deque = deque(maxlen=capacity)
+        self._rng = _make_py_rng(seed)
 
     def push(self, *transition):
         self.buffer.append(transition)
 
     def sample(self, batch_size: int):
-        batch = random.sample(self.buffer, batch_size)
+        batch = self._rng.sample(self.buffer, batch_size)
         states, actions, rewards, next_states, dones = zip(*batch)
         return (
             np.asarray(states, dtype=np.float32),
@@ -77,13 +131,17 @@ class IntraBMAAgent:
 
     状态：[归一化预算, 各客户端 (d_i, c_i, a_i, T_up) 归一化特征]
     动作：策略网络输出 K 维打分，softmax 得预算分配权重。
+
+    Args:
+        seed: 智能体专属随机种子。给定后，网络初始化、ε-探索、经验回放采样
+              均使用独立随机流，与其它智能体和客户端采样流互不干扰。
     """
 
     def __init__(self, num_clients: int, learning_rate: float = 1e-3,
                  epsilon: float = 0.3, epsilon_decay: float = 0.99,
                  epsilon_min: float = 0.01, batch_size: int = 32,
                  memory_size: int = 10000, floor: float = 0.1,
-                 softmin_beta: float = 2.0):
+                 softmin_beta: float = 2.0, seed: int | None = None):
         self.num_clients = num_clients
         # 状态维度：1 (预算) + 4 * K (客户端特征)
         self.state_dim = 1 + 4 * num_clients
@@ -96,7 +154,13 @@ class IntraBMAAgent:
         self.floor = floor
         self.softmin_beta = softmin_beta
 
-        self.policy = _MLP(self.state_dim, self.action_dim)
+        self.seed = seed
+        self._py_rng = _make_py_rng(seed)                       # 经验回放采样
+        self._np_rng = _make_np_rng(None if seed is None else seed + 1)  # ε-探索
+
+        # 网络权重初始化走独立 torch 随机流，不污染全局状态。
+        with torch_seed(None if seed is None else seed + 2):
+            self.policy = _MLP(self.state_dim, self.action_dim)
         self.optimizer = optim.Adam(self.policy.parameters(), lr=learning_rate)
 
         # 经验缓冲存 (state, 客户端参数) 以便可微重放。
@@ -120,9 +184,13 @@ class IntraBMAAgent:
         return w / w.sum(dim=-1, keepdim=True)
 
     def act(self, state: np.ndarray, round_budget: float):
-        """返回 (weights, budgets)。训练期以 epsilon 概率随机探索。"""
-        if np.random.random() <= self.epsilon:
-            weights = np.random.dirichlet(np.ones(self.num_clients))
+        """返回 (weights, budgets)。训练期以 epsilon 概率随机探索。
+
+        注意：``epsilon <= 0`` 时直接走确定性分支，避免无谓消耗随机流
+        （原实现即便 epsilon=0 也会抽一次随机数，使随机序列依赖调用次数）。
+        """
+        if self.epsilon > 0.0 and self._np_rng.random() <= self.epsilon:
+            weights = self._np_rng.dirichlet(np.ones(self.num_clients))
             weights = weights + self.floor / self.num_clients
             weights = weights / weights.sum()
         else:
@@ -147,7 +215,7 @@ class IntraBMAAgent:
         """可微重放：最小化批次的软化最大完成时间。"""
         if len(self.memory) < self.batch_size:
             return None
-        batch = random.sample(self.memory, self.batch_size)
+        batch = self._py_rng.sample(self.memory, self.batch_size)
         states = torch.FloatTensor(np.stack([b[0] for b in batch]))
         d = torch.FloatTensor(np.stack([b[1] for b in batch]))
         c = torch.FloatTensor(np.stack([b[2] for b in batch]))
@@ -193,6 +261,9 @@ class InterBMAAgent:
     状态：[会话索引归一化, 剩余预算归一化, 最近 C' 轮准确率/支付/时间]
     动作：20 个离散预算比例档位。
     奖励：λ·准确率提升 - 轮次时延。
+
+    Args:
+        seed: 智能体专属随机种子，控制 Q 网络初始化、ε-greedy 与回放采样。
     """
 
     def __init__(self, num_clients: int = 20, action_dim: int = 20,
@@ -200,7 +271,7 @@ class InterBMAAgent:
                  gamma: float = 0.95, epsilon: float = 0.9,
                  epsilon_decay: float = 0.995, epsilon_min: float = 0.05,
                  batch_size: int = 32, memory_size: int = 10000,
-                 target_update_freq: int = 10):
+                 target_update_freq: int = 10, seed: int | None = None):
         self.num_clients = num_clients
         self.action_dim = action_dim
         self.c_prime = c_prime
@@ -214,12 +285,17 @@ class InterBMAAgent:
         self.batch_size = batch_size
         self.target_update_freq = target_update_freq
 
-        self.q_network = _MLP(self.state_dim, action_dim, hidden=(64, 64))
-        self.target_network = _MLP(self.state_dim, action_dim, hidden=(64, 64))
+        self.seed = seed
+        self._np_rng = _make_np_rng(None if seed is None else seed + 1)  # ε-greedy
+
+        # 两个网络的初始化走同一条独立 torch 随机流，不污染全局状态。
+        with torch_seed(None if seed is None else seed + 2):
+            self.q_network = _MLP(self.state_dim, action_dim, hidden=(64, 64))
+            self.target_network = _MLP(self.state_dim, action_dim, hidden=(64, 64))
         self.target_network.load_state_dict(self.q_network.state_dict())
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=learning_rate)
 
-        self.memory = ReplayBuffer(memory_size)
+        self.memory = ReplayBuffer(memory_size, seed=seed)
         self.training_step = 0
         self.history = {"payments": [], "times": [], "accuracies": []}
 
@@ -248,8 +324,8 @@ class InterBMAAgent:
         return np.asarray(state, dtype=np.float32)
 
     def select_action(self, state: np.ndarray) -> int:
-        if np.random.random() < self.epsilon:
-            return np.random.randint(0, self.action_dim)
+        if self.epsilon > 0.0 and self._np_rng.random() < self.epsilon:
+            return _randint(self._np_rng, self.action_dim)
         with torch.no_grad():
             st = torch.FloatTensor(state).unsqueeze(0)
             return int(self.q_network(st).argmax().item())

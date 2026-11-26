@@ -1,0 +1,80 @@
+
+############################################################
+#  local_epochs = 1   (2026-11-26 12:39:10)
+############################################################
+[12:39:10] 任务启动 | local_epochs=1 | rounds=50
+[12:39:10] 产物目录: /Users/sunwenqiang/PycharmProjects/EURO/timelist_new/local_epochs1 与 /Users/sunwenqiang/PycharmProjects/EURO/models_new/local_epochs1
+[12:39:10] ===== 开始 mnist / lenet5 / 50轮 / 本地1epoch =====
+[12:44:18] ===== 完成 mnist（退出码 0）=====
+[12:44:18] ===== 开始 fmnist / lenet5 / 50轮 / 本地1epoch =====
+[12:48:58] ===== 完成 fmnist（退出码 0）=====
+[12:48:58] ===== 开始 cifar10 / resnet18 / 50轮 / 本地1epoch =====
+[13:37:13] ===== 完成 cifar10（退出码 0）=====
+[13:37:13] ===== 开始 cifar100 / resnet18 / 50轮 / 本地1epoch =====
+[14:25:30] ===== 完成 cifar100（退出码 0）=====
+[14:25:30] 全部任务结束
+--- /Users/sunwenqiang/PycharmProjects/EURO/timelist_new/local_epochs1 ---
+total 64
+drwxr-xr-x@ 10 sunwenqiang  staff  320 Nov 26 13:38 .
+drwxr-xr-x@ 12 sunwenqiang  staff  384 Nov 26 12:39 ..
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 14:25 cifar100_testacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 14:25 cifar100_trainacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 13:37 cifar10_testacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 13:37 cifar10_trainacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 12:48 fmnist_testacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 12:48 fmnist_trainacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 12:44 mnist_testacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 12:44 mnist_trainacc.npy
+--- /Users/sunwenqiang/PycharmProjects/EURO/models_new/local_epochs1 ---
+total 176024
+drwxr-xr-x@ 10 sunwenqiang  staff       320 Nov 26 14:25 .
+drwxr-xr-x@ 11 sunwenqiang  staff       352 Nov 26 12:39 ..
+-rw-r--r--@  1 sunwenqiang  staff  44959307 Nov 26 14:25 cifar100_resnet18.pth
+-rw-r--r--@  1 sunwenqiang  staff       845 Nov 26 14:25 cifar100_resnet18_meta.json
+-rw-r--r--@  1 sunwenqiang  staff  44774475 Nov 26 13:37 cifar10_resnet18.pth
+-rw-r--r--@  1 sunwenqiang  staff       819 Nov 26 13:37 cifar10_resnet18_meta.json
+-rw-r--r--@  1 sunwenqiang  staff    181733 Nov 26 12:48 fmnist_lenet5.pth
+-rw-r--r--@  1 sunwenqiang  staff       821 Nov 26 12:48 fmnist_lenet5_meta.json
+-rw-r--r--@  1 sunwenqiang  staff    181717 Nov 26 12:44 mnist_lenet5.pth
+-rw-r--r--@  1 sunwenqiang  staff       819 Nov 26 12:44 mnist_lenet5_meta.json
+
+############################################################
+#  local_epochs = 2   (2026-11-26 14:25:30)
+############################################################
+[14:25:30] 任务启动 | local_epochs=2 | rounds=50
+[14:25:30] 产物目录: /Users/sunwenqiang/PycharmProjects/EURO/timelist_new/local_epochs2 与 /Users/sunwenqiang/PycharmProjects/EURO/models_new/local_epochs2
+[14:25:30] ===== 开始 mnist / lenet5 / 50轮 / 本地2epoch =====
+[14:33:22] ===== 完成 mnist（退出码 0）=====
+[14:33:22] ===== 开始 fmnist / lenet5 / 50轮 / 本地2epoch =====
+[14:41:04] ===== 完成 fmnist（退出码 0）=====
+[14:41:04] ===== 开始 cifar10 / resnet18 / 50轮 / 本地2epoch =====
+[17:41:32] ===== 完成 cifar10（退出码 0）=====
+[17:41:32] ===== 开始 cifar100 / resnet18 / 50轮 / 本地2epoch =====
+[20:31:51] ===== 完成 cifar100（退出码 0）=====
+[20:31:51] 全部任务结束
+--- /Users/sunwenqiang/PycharmProjects/EURO/timelist_new/local_epochs2 ---
+total 64
+drwxr-xr-x@ 10 sunwenqiang  staff  320 Nov 26 17:44 .
+drwxr-xr-x@ 13 sunwenqiang  staff  416 Nov 26 14:25 ..
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 20:31 cifar100_testacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 20:31 cifar100_trainacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 17:41 cifar10_testacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 17:41 cifar10_trainacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 14:41 fmnist_testacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 14:41 fmnist_trainacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 14:33 mnist_testacc.npy
+-rw-r--r--@  1 sunwenqiang  staff  328 Nov 26 14:33 mnist_trainacc.npy
+--- /Users/sunwenqiang/PycharmProjects/EURO/models_new/local_epochs2 ---
+total 176024
+drwxr-xr-x@ 10 sunwenqiang  staff       320 Nov 26 20:31 .
+drwxr-xr-x@ 12 sunwenqiang  staff       384 Nov 26 14:25 ..
+-rw-r--r--@  1 sunwenqiang  staff  44959307 Nov 26 20:31 cifar100_resnet18.pth
+-rw-r--r--@  1 sunwenqiang  staff       822 Nov 26 20:31 cifar100_resnet18_meta.json
+-rw-r--r--@  1 sunwenqiang  staff  44774475 Nov 26 17:41 cifar10_resnet18.pth
+-rw-r--r--@  1 sunwenqiang  staff       820 Nov 26 17:41 cifar10_resnet18_meta.json
+-rw-r--r--@  1 sunwenqiang  staff    181733 Nov 26 14:41 fmnist_lenet5.pth
+-rw-r--r--@  1 sunwenqiang  staff       833 Nov 26 14:41 fmnist_lenet5_meta.json
+-rw-r--r--@  1 sunwenqiang  staff    181717 Nov 26 14:33 mnist_lenet5.pth
+-rw-r--r--@  1 sunwenqiang  staff       817 Nov 26 14:33 mnist_lenet5_meta.json
+
+[20:31:51] ===== local_epochs 扫描全部结束 =====

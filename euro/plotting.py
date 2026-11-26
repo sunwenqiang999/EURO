@@ -65,6 +65,9 @@ BAR_FIGSIZE = (6.4, 4.8) # 柱状图（matplotlib 默认比例）
 BAR_WIDTH = 0.15
 SAVE_DPI = 300
 
+# 敏感性柱状图配色（ψ=1/10/100/500/1000 依次蓝/橙/绿/红/紫）。
+SENS_BAR_COLORS = ["b", "orange", "g", "r", "purple"]
+
 
 def first_reach_index(accuracy: Sequence[float], target: float) -> Optional[int]:
     """返回首次达到 target 的轮次索引；从未达标返回 None。"""
@@ -188,6 +191,42 @@ def plot_sensitivity(accuracy: Sequence[float],
     if title:
         ax.set_title(title)
     ax.grid(True)
+    ax.legend()
+    fig.tight_layout()
+    _save(fig, out_dir, name)
+
+
+def plot_sensitivity_bar(accuracy: Sequence[float],
+                         series: Dict,
+                         label_fmt: str,
+                         target_accuracies: Sequence[float],
+                         out_dir: str, name: str,
+                         title: str = "") -> None:
+    """敏感性柱状图：横轴为目标精度，每组柱子对应一个参数取值。
+
+    与原实验图 ``figures/C_picture/`` 一致（ψ 超参数敏感性用柱状图而非折线图）。
+    series 为 {参数值: 逐轮时延}。
+    """
+    acc = np.asarray(accuracy, dtype=np.float64)
+    keys = list(series.keys())
+    n_targets = len(target_accuracies)
+
+    fig, ax = plt.subplots(figsize=BAR_FIGSIZE)
+    x = np.arange(n_targets)
+    for i, key in enumerate(keys):
+        heights = []
+        for target in target_accuracies:
+            idx = first_reach_index(acc, target)
+            heights.append(0.0 if idx is None else _cumulative_time(series[key], idx))
+        ax.bar(x + i * BAR_WIDTH, heights, BAR_WIDTH,
+               label=label_fmt.format(key), color=SENS_BAR_COLORS[i % len(SENS_BAR_COLORS)])
+
+    ax.set_xlabel("Accuracy (%)")
+    ax.set_ylabel("Time (s)")
+    if title:
+        ax.set_title(title)
+    ax.set_xticks(x + BAR_WIDTH * 2)
+    ax.set_xticklabels([str(t) for t in target_accuracies])
     ax.legend()
     fig.tight_layout()
     _save(fig, out_dir, name)

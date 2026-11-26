@@ -101,10 +101,14 @@ def inter_average(B: float, T: int) -> np.ndarray:
     return np.full(T, round(B / T, 4), dtype=np.float64)
 
 
-def inter_random(B: float, T: int, rng: np.random.Generator | None = None) -> np.ndarray:
-    """随机轮间：随机权重归一化后乘以 B。"""
-    draw = rng.random if rng is not None else np.random.random
-    r = draw(T) * 10.0 + 0.5
+def inter_random(B: float, T: int, rng: np.random.Generator) -> np.ndarray:
+    """随机轮间：随机权重归一化后乘以 B。
+
+    ``rng`` 必填，禁止回退到全局 ``np.random``（保证可复现）。
+    """
+    if rng is None:
+        raise ValueError("inter_random 需要显式传入 np.random.Generator 以保证可复现")
+    r = rng.random(T) * 10.0 + 0.5
     r = r / r.sum() * B
     return np.round(r, 4)
 
@@ -120,11 +124,15 @@ def intra_average(P: float, d_i, c_i, a_i, sigma, T_up):
     return float(np.max(times)), budgets, times
 
 
-def intra_random(P: float, d_i, c_i, a_i, sigma, T_up, rng: np.random.Generator | None = None):
-    """随机轮内：随机权重归一化后乘以 P。"""
+def intra_random(P: float, d_i, c_i, a_i, sigma, T_up, rng: np.random.Generator = None):
+    """随机轮内：随机权重归一化后乘以 P。
+
+    ``rng`` 必填，禁止回退到全局 ``np.random``（保证可复现）。
+    """
+    if rng is None:
+        raise ValueError("intra_random 需要显式传入 np.random.Generator 以保证可复现")
     k = len(d_i)
-    draw = rng.random if rng is not None else np.random.random
-    r = draw(k) + 0.25
+    r = rng.random(k) + 0.25
     budgets = r / r.sum() * P
     times = completion_times(budgets, d_i, c_i, a_i, sigma, T_up)
     return float(np.max(times)), budgets, times
