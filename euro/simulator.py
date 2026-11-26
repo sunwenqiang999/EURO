@@ -28,20 +28,93 @@ from .config import SimConfig, derive_seed, sample_clients
 # --------------------------------------------------------------------------- #
 # 轮内对比实验
 # --------------------------------------------------------------------------- #
-def _warmup_intra_agent(agent: IntraBMAAgent, round_budgets, sim: SimConfig,
-                        warm_seed: int, epochs: int = 30) -> None:
-    """对轮内 DQN 做若干 epoch 预训练，使其策略优于随机/均匀基线。
+INTRA_WARMUP_EPOCHS = 300     # 轮内策略预训练 epoch 数（每 epoch = num_rounds 个样本）
+INTER_PRETRAIN_EPISODES = 200  # 轮间 DQN 预训练 episode 数
 
-    使用由 ``warm_seed`` 确定的独立随机流，避免污染评估阶段的客户端采样序列。
+
+def _warmup_intra_agent(agent: IntraBMAAgent, round_budgets, sim: SimConfig,
+                        warm_seed: int, epochs: int = INTRA_WARMUP_EPOCHS) -> None:
+    """用纯强化学习（REINFORCE）预训练轮内策略。
+
+    每步：采样一组客户端 -> 智能体带噪声给出预算分配 -> 环境返回本轮时延
+    -> 奖励 ``1 - T / T_uniform`` -> 策略梯度更新。智能体全程不接触时延公式。
+
+    预算在评估阶段会落入 [0.5, 2.5] 倍的 IRBAI 预算范围内（联合实验里由轮间
+    DQN 决定），因此预训练时在该范围随机取预算，避免训练/评估分布不一致。
+    使用独立随机流，不污染评估阶段的客户端采样序列。
     """
     warm_rng = np.random.default_rng(warm_seed)
-    for _ in range(epochs):
+    std_hi, std_lo = 0.6, 0.1
+    for ep in range(epochs):
+        agent.explore_std = std_hi + (std_lo - std_hi) * ep / max(epochs - 1, 1)
         for r in range(sim.num_rounds):
-            budget = float(round_budgets[r])
+            budget = float(round_budgets[r]) * float(warm_rng.uniform(0.5, 2.5))
             cp = sample_clients(sim, warm_rng)
             state = agent.build_state(budget, cp)
-            agent.remember(state, cp, budget)
+            _, payments = agent.act(state, budget)
+            t = float(np.max(alg.completion_times(payments, cp.d_i, cp.c_i, cp.a_i,
+                                                  cp.sigma, cp.T_up)))
+            t_ref, _, _ = alg.intra_average(budget, cp.d_i, cp.c_i, cp.a_i,
+                                            cp.sigma, cp.T_up)
+            reward = float(np.clip(1.0 - t / t_ref, -3.0, 1.0))
+            agent.learn(state, agent.last_logits, reward)
+    agent.set_eval()
+
+
+def _pretrain_inter_agent(agent: InterBMAAgent, accuracy: np.ndarray, sim: SimConfig,
+                          target_accuracy: float, seed: int, time_fn,
+                          episodes: int = INTER_PRETRAIN_EPISODES) -> None:
+    """多 episode 预训练轮间 DQN。
+
+    每个 episode 重新采样客户端，完整走 num_rounds 轮；时延由 ``time_fn(budget, cp)``
+    给出（轮间实验用解析轮内分配，联合实验用已训练好的轮内策略）。
+    训练结束后重置历史并关闭探索，评估阶段不再更新网络。
+    """
+    rng = np.random.default_rng(seed)
+    T, B = sim.num_rounds, sim.total_budget
+
+    # 标定时延量纲：均分预算下的平均轮时延。
+    ref = []
+    for _ in range(20):
+        cp = sample_clients(sim, rng)
+        t, _, _ = alg.intra_average(B / T, cp.d_i, cp.c_i, cp.a_i, cp.sigma, cp.T_up)
+        ref.append(t)
+    agent.time_scale = float(np.mean(ref))
+
+    for _ in range(episodes):
+        agent.reset_history()
+        remaining = B
+        for r in range(T):
+            cp = sample_clients(sim, rng)
+            acc = float(accuracy[r])
+            state = agent.build_state(r, remaining, T, B)
+            action = agent.select_action(state)
+            budget = agent.action_to_budget(action, remaining, r, T, acc, target_accuracy)
+            t, payments, tlist = time_fn(budget, cp)
+            prev_acc = agent.history["accuracies"][-1] if agent.history["accuracies"] else 0.0
+            reward = agent.calculate_reward(acc, prev_acc, t)
+            remaining -= float(np.sum(payments))
+            agent.update_history(payments, tlist, acc)
+            next_state = agent.build_state(r + 1, remaining, T, B)
+            done = (r >= T - 1) or (remaining <= 0)
+            agent.remember(state, action, reward, next_state, done)
             agent.replay()
+            if done:
+                break
+    agent.reset_history()
+    agent.set_eval()
+
+
+def _analytic_time_fn(budget, cp):
+    return alg.intra_ours(budget, cp.d_i, cp.c_i, cp.a_i, cp.sigma, cp.T_up)
+
+
+def _policy_time_fn(intra_agent: IntraBMAAgent):
+    def fn(budget, cp):
+        _, payments = intra_agent.act(intra_agent.build_state(budget, cp), budget)
+        tl = alg.completion_times(payments, cp.d_i, cp.c_i, cp.a_i, cp.sigma, cp.T_up)
+        return float(np.max(tl)), payments, tl
+    return fn
 
 
 def run_intra_experiment(accuracy: np.ndarray, sim: SimConfig,
@@ -59,10 +132,9 @@ def run_intra_experiment(accuracy: np.ndarray, sim: SimConfig,
 
     agent = IntraBMAAgent(sim.num_clients,
                           seed=derive_seed(sim.seed, "intra", "intra_agent"))
-    # 预训练：让轮内策略网络在多个 epoch 上学习，收敛到优于朴素基线。
+    # 预训练：纯强化学习（只用时延奖励），评估阶段固定策略。
     _warmup_intra_agent(agent, round_budgets, sim,
-                        derive_seed(sim.seed, "intra", "warmup"), epochs=30)
-    agent.epsilon = 0.0  # 评估阶段使用已学习的确定性策略
+                        derive_seed(sim.seed, "intra", "warmup"))
     times = {k: [] for k in ("random", "average", "fair", "euro_afl", "ours")}
 
     for r in range(sim.num_rounds):
@@ -79,9 +151,6 @@ def run_intra_experiment(accuracy: np.ndarray, sim: SimConfig,
         weights, payments = agent.act(state, budget)
         rl_times = alg.completion_times(payments, cp.d_i, cp.c_i, cp.a_i, cp.sigma, cp.T_up)
         t_rl = float(np.max(rl_times))
-        agent.remember(state, cp, budget)
-        for _ in range(4):
-            agent.replay()
 
         times["random"].append(t_rand)
         times["average"].append(t_avg)
@@ -97,13 +166,17 @@ def run_intra_experiment(accuracy: np.ndarray, sim: SimConfig,
 # --------------------------------------------------------------------------- #
 def run_inter_experiment(accuracy: np.ndarray, sim: SimConfig,
                          target_accuracy: float,
-                         rng: np.random.Generator) -> Dict[str, List[float]]:
+                         rng: np.random.Generator,
+                         budgets_out: dict | None = None) -> Dict[str, List[float]]:
     """固定轮内 IRBSB 解析分配，比较不同轮间策略的逐轮时延。
 
     Returns:
         {method: [逐轮时延]}，method ∈
         {random, average, euro_afl, ours}
         （对应 PPT 轮间消融：IRBAI / InterBMA / Random / FedAvg）
+
+    若传入 ``budgets_out``（dict），会把各方法每轮实际投入的预算写入其中
+    （键同上，值为长度 T 的列表），仅用于分析展示，不影响实验结果。
     """
     sim.irbai_Q = target_accuracy
     budgets_ours = alg.inter_ours(accuracy, sim.total_budget, sim.num_rounds,
@@ -113,9 +186,16 @@ def run_inter_experiment(accuracy: np.ndarray, sim: SimConfig,
 
     inter_agent = InterBMAAgent(num_clients=sim.num_clients,
                                 seed=derive_seed(sim.seed, "inter", "inter_agent"))
+    _pretrain_inter_agent(inter_agent, accuracy, sim, target_accuracy,
+                          derive_seed(sim.seed, "inter", "pretrain"), _analytic_time_fn)
     remaining = sim.total_budget
 
     times = {k: [] for k in ("random", "average", "euro_afl", "ours")}
+    if budgets_out is not None:
+        budgets_out.update({"ours": [float(x) for x in budgets_ours],
+                            "average": [float(x) for x in budgets_avg],
+                            "random": [float(x) for x in budgets_rand],
+                            "euro_afl": []})
 
     for r in range(sim.num_rounds):
         cp = sample_clients(sim, rng)        # 本轮共享客户端参数
@@ -135,16 +215,11 @@ def run_inter_experiment(accuracy: np.ndarray, sim: SimConfig,
         rl_budget = inter_agent.action_to_budget(action, remaining, r,
                                                  sim.num_rounds, acc, target_accuracy)
         t_rl, rl_payments, rl_tlist = intra_time(rl_budget)
+        if budgets_out is not None:
+            budgets_out["euro_afl"].append(float(rl_budget))
 
-        prev_acc = inter_agent.history["accuracies"][-1] if inter_agent.history["accuracies"] else 0.0
-        reward = inter_agent.calculate_reward(acc, prev_acc, t_rl)
         remaining -= float(np.sum(rl_payments))
-        inter_agent.update_history(rl_payments, rl_tlist, acc)
-        next_state = inter_agent.build_state(r + 1, remaining, sim.num_rounds, sim.total_budget)
-        done = (r >= sim.num_rounds - 1) or (remaining <= 0)
-        inter_agent.remember(state, action, reward, next_state, done)
-        for _ in range(4):
-            inter_agent.replay()
+        inter_agent.update_history(rl_payments, rl_tlist, acc)   # 评估阶段只更新历史，不再学习
 
         times["random"].append(t_rand)
         times["average"].append(t_avg)
@@ -159,7 +234,8 @@ def run_inter_experiment(accuracy: np.ndarray, sim: SimConfig,
 # --------------------------------------------------------------------------- #
 def run_joint_experiment(accuracy: np.ndarray, sim: SimConfig,
                          target_accuracy: float,
-                         rng: np.random.Generator) -> Dict[str, List[float]]:
+                         rng: np.random.Generator,
+                         budgets_out: dict | None = None) -> Dict[str, List[float]]:
     """五种方法各用自己完整的「轮间 + 轮内」组合，比较逐轮时延。
 
     对应中期答辩 PPT「对比算法」整体对比：
@@ -183,14 +259,22 @@ def run_joint_experiment(accuracy: np.ndarray, sim: SimConfig,
     intra_agent = IntraBMAAgent(sim.num_clients,
                                 seed=derive_seed(sim.seed, "joint", "intra_agent"))
     _warmup_intra_agent(intra_agent, budgets_ours, sim,
-                        derive_seed(sim.seed, "joint", "warmup"), epochs=30)
-    intra_agent.epsilon = 0.0
+                        derive_seed(sim.seed, "joint", "warmup"))
     # 轮间 RL 智能体（EURO-AFL 第一阶段）。
     inter_agent = InterBMAAgent(num_clients=sim.num_clients,
                                 seed=derive_seed(sim.seed, "joint", "inter_agent"))
+    _pretrain_inter_agent(inter_agent, accuracy, sim, target_accuracy,
+                          derive_seed(sim.seed, "joint", "inter_pretrain"),
+                          _policy_time_fn(intra_agent))
     remaining = sim.total_budget
 
     times = {k: [] for k in ("random", "average", "fair", "euro_afl", "ours")}
+    if budgets_out is not None:   # 仅用于分析展示，不影响实验结果
+        budgets_out.update({"ours": [float(x) for x in budgets_ours],
+                            "average": [float(x) for x in budgets_avg],
+                            "fair": [float(x) for x in budgets_avg],
+                            "random": [float(x) for x in budgets_rand],
+                            "euro_afl": []})
 
     for r in range(sim.num_rounds):
         cp = sample_clients(sim, rng)        # 本轮共享客户端参数
@@ -214,20 +298,15 @@ def run_joint_experiment(accuracy: np.ndarray, sim: SimConfig,
         action = inter_agent.select_action(state)
         rl_budget = inter_agent.action_to_budget(action, remaining, r,
                                                  sim.num_rounds, acc, target_accuracy)
+        if budgets_out is not None:
+            budgets_out["euro_afl"].append(float(rl_budget))
         intra_state = intra_agent.build_state(rl_budget, cp)
         _, rl_payments = intra_agent.act(intra_state, rl_budget)
         rl_tlist = alg.completion_times(rl_payments, cp.d_i, cp.c_i, cp.a_i, cp.sigma, cp.T_up)
         t_rl = float(np.max(rl_tlist))
 
-        prev_acc = inter_agent.history["accuracies"][-1] if inter_agent.history["accuracies"] else 0.0
-        reward = inter_agent.calculate_reward(acc, prev_acc, t_rl)
         remaining -= float(np.sum(rl_payments))
-        inter_agent.update_history(rl_payments, rl_tlist, acc)
-        next_state = inter_agent.build_state(r + 1, remaining, sim.num_rounds, sim.total_budget)
-        done = (r >= sim.num_rounds - 1) or (remaining <= 0)
-        inter_agent.remember(state, action, reward, next_state, done)
-        for _ in range(4):
-            inter_agent.replay()
+        inter_agent.update_history(rl_payments, rl_tlist, acc)   # 评估阶段只更新历史，不再学习
 
         times["random"].append(t_rand)
         times["average"].append(t_avg)
