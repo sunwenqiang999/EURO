@@ -359,8 +359,8 @@ class InterBMAAgent:
         avg_remaining = remaining_budget / remaining_sessions
         if accuracy < target_accuracy:
             ratio = (action + 1) / self.action_dim
-            # 允许早期适度超额分配（上限为均值的 3 倍）。
-            allocation = ratio * avg_remaining * 3.0
+            # 允许早期适度超额分配（上限为均值的 2 倍，与 IRBAI 首轮 2 倍一致）。
+            allocation = ratio * avg_remaining * 2.0
             allocation = max(min(allocation, remaining_budget), 150.0)
         else:
             allocation = avg_remaining
